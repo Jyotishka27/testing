@@ -1,0 +1,32 @@
+[
+  {
+    "id": "thunderbolt",
+    "name": "Thunderbolt",
+    "logo": "Thunderbolt.jpg"
+  },
+  {
+    "id": "red-bulls-eleven",
+    "name": "Red Bulls Eleven",
+    "logo": "Red Bulls Eleven.jpg"
+  },
+  {
+    "id": "messiah-fc",
+    "name": "Messiah FC",
+    "logo": "Messiah FC.jpg"
+  },
+  {
+    "id": "white-panthers",
+    "name": "White Panthers",
+    "logo": "White Panthers.jpg"
+  },
+  {
+    "id": "strawhat-pirates",
+    "name": "Strawhat Pirates",
+    "logo": "Strawhat Pirates.jpg"
+  },
+  {
+    "id": "amigos-fc",
+    "name": "Amigos FC",
+    "logo": "Amigos FC.jpg"
+  }
+]

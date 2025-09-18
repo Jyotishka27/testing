@@ -1,0 +1,279 @@
+/* wae-colors.css — Light theme to match Home (index.html) */
+
+/* Brand colors */
+:root{
+  --wae-nav-bg: #0b1220;       /* dark nav */
+  --wae-cta-green: #22C55E;    /* primary green */
+  --wae-white: #FFFFFF;
+  --wae-text: #0b1220;
+  --wae-muted: #6b7280;
+  --wae-radius: 12px;
+  --wae-border: #e6e9ee;
+}
+
+/* Page background (light) */
+.wae-bg {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color: var(--wae-text);
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Site header/nav */
+.wae-nav {
+  background: var(--wae-nav-bg);
+  color: var(--wae-white);
+  padding: 0.65rem 1rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow: 0 2px 8px rgba(11,18,32,0.06);
+}
+.wae-nav a { color: var(--wae-white); text-decoration:none; margin-left:0.75rem; font-weight:600; }
+.wae-nav .logo { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--wae-white); }
+
+/* Card / panel */
+.wae-panel {
+  background: var(--wae-white);
+  border-radius: var(--wae-radius);
+  padding: 1.25rem;
+  box-shadow: 0 6px 20px rgba(11,18,32,0.06);
+  border: 1px solid var(--wae-border);
+}
+
+/* Inputs for light panels */
+.wae-input-light, .wae-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: var(--wae-text);
+  font-size: 1rem;
+}
+.wae-input-light::placeholder, .wae-input::placeholder { color: #9ca3af; }
+
+/* Buttons */
+.wae-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  padding: .75rem 1rem;
+  border-radius: 9999px;
+  font-weight:700; cursor:pointer; border:none;
+}
+.wae-btn-primary {
+  background: linear-gradient(90deg, var(--wae-cta-green), #16a34a);
+  color: white;
+  box-shadow: 0 6px 18px rgba(34,197,94,0.18);
+}
+.wae-btn-ghost {
+  background: transparent; color: var(--wae-text); border:1px solid var(--wae-border);
+}
+
+/* Muted text */
+.wae-muted { color: var(--wae-muted); }
+
+/* Utility */
+.center { display:flex; align-items:center; justify-content:center; }
+.max-w-md { max-width:720px; margin-left:auto; margin-right:auto; }
+
+/* Responsive tweaks */
+@media (max-width:640px){
+  .wae-hero { padding: 3.5rem 1rem; }
+  .wae-panel { padding: 1rem; }
+}
+
+
+
+/* NAV - centered boxed style to match Home header */
+.wae-nav {
+  background: transparent; /* allow page bg to show */
+  padding: 1.1rem 0;
+  width: 100%;
+  box-shadow: none;
+}
+
+/* Style direct child (logo + links container) to create a centered boxed nav */
+.wae-nav > * {
+  max-width: 1120px;
+  margin: 0 auto;
+  width: calc(100% - 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--wae-nav-bg); /* dark boxed nav like Home */
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(11,18,32,0.12);
+}
+
+/* Ensure links and logo keep the white color and spacing */
+.wae-nav a, .wae-nav .logo {
+  color: var(--wae-white);
+  text-decoration: none;
+}
+.wae-nav .logo { display:flex; align-items:center; gap:0.5rem; font-weight:700; }
+
+/* Small screens: reduce padding so box fits better */
+@media (max-width: 640px) {
+  .wae-nav > * { width: calc(100% - 1rem); padding: 0.45rem 0.75rem; }
+}
+
+
+
+/* Membership cards - polished look */
+.wae-membership-section {
+  padding: 4rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+.wae-membership-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+  color: var(--wae-text);
+  letter-spacing: -0.5px;
+}
+.wae-membership-subtitle {
+  max-width: 700px;
+  margin: 0 auto 2rem auto;
+  color: var(--wae-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Cards grid */
+.wae-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+  margin-top: 1.25rem;
+}
+@media (max-width: 1100px) {
+  .wae-cards-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .wae-cards-grid { grid-template-columns: 1fr; }
+}
+
+/* Individual card */
+.wae-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+  border-radius: 14px;
+  padding: 1.6rem;
+  border: 1px solid rgba(11,18,32,0.04);
+  box-shadow: 0 10px 30px rgba(11,18,32,0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform .28s ease, box-shadow .28s ease;
+}
+.wae-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 40px rgba(11,18,32,0.12);
+}
+
+/* Card header */
+.wae-card h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--wae-text); }
+.wae-price { font-size: 1.25rem; font-weight: 800; margin: 0.45rem 0; color: var(--wae-nav-bg); }
+
+.wae-card .wae-features { color: var(--wae-muted); font-size: 0.95rem; text-align: left; margin-top: 0.6rem; }
+.wae-card .wae-features li { margin: 0.45rem 0; line-height: 1.5; }
+
+/* CTA */
+.wae-cta-wrap { margin-top: 1.25rem; display:flex; justify-content:center; }
+.wae-btn-primary {
+  padding: 0.9rem 1.3rem;
+  border-radius: 999px;
+  font-weight:700;
+  font-size: 1rem;
+  background: linear-gradient(90deg, var(--wae-cta-green), #16a34a);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(34,197,94,0.18);
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.wae-btn-primary:hover { transform: translateY(-3px); filter: brightness(1.02); box-shadow: 0 16px 40px rgba(34,197,94,0.22); }
+
+/* ribbon for featured */
+.wae-ribbon { position: relative; }
+.wae-ribbon::before {
+  content: 'Most popular';
+  position: absolute;
+  right: 14px;
+  top: -12px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: white;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(5,150,105,0.16);
+}
+
+/* subtle footer spacing */
+.wae-membership-footer { margin-top: 2.5rem; color: var(--wae-muted); font-size: 0.95rem; }
+
+
+
+/* Registration page - polished card */
+.wae-register-wrapper { padding: 3.25rem 1rem; display:flex; justify-content:center; }
+.wae-register-card {
+  width: 420px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), #ffffff);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 18px 40px rgba(11,18,32,0.06);
+  border: 1px solid rgba(11,18,32,0.04);
+}
+.wae-register-head h1 { margin:0; font-size:1.4rem; font-weight:800; color:var(--wae-text); }
+.wae-register-sub { margin: 6px 0 12px 0; color:var(--wae-muted); font-size:0.95rem; }
+
+.wae-plan-summary { text-align:left; margin-bottom:12px; }
+.wae-plan-title { margin:0; font-weight:700; font-size:1rem; color:var(--wae-text); }
+.wae-plan-price { margin:6px 0; font-weight:800; color:var(--wae-nav-bg); font-size:1.05rem; }
+.wae-plan-desc { color:var(--wae-muted); font-size:0.9rem; margin:0; }
+
+.wae-label { display:block; margin-top:0.6rem; font-size:0.9rem; color:var(--wae-text); }
+.wae-input { width:100%; padding:0.85rem 1rem; margin-top:8px; border-radius:10px; border:1px solid #e6e9ee; background:#f8fbff; color:var(--wae-text); box-sizing:border-box; }
+.wae-input:focus { outline:none; box-shadow: 0 6px 18px rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.32); }
+
+.wae-btn-block { display:block; width:100%; padding:0.95rem; border-radius:999px; font-weight:700; }
+.wae-form-note { margin-top:0.9rem; font-size:0.85rem; color:var(--wae-muted); text-align:center; }
+.wae-form-alt { margin-top:0.75rem; text-align:center; font-size:0.95rem; }
+
+@media (max-width: 480px) {
+  .wae-register-card { width: calc(100% - 2rem); padding: 1rem; }
+  .wae-register-wrapper { padding: 2rem 0; }
+}
+
+
+
+/* Login page - polished */
+.wae-login-wrapper { padding: 4rem 1rem 6rem 1rem; display:flex; justify-content:center; }
+.wae-login-card {
+  width: 420px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), #ffffff);
+  border-radius: 12px;
+  padding: 1.6rem;
+  box-shadow: 0 18px 40px rgba(11,18,32,0.06);
+  border: 1px solid rgba(11,18,32,0.04);
+}
+.wae-login-title { margin:0; font-size:1.4rem; font-weight:800; color:var(--wae-text); }
+.wae-login-sub { margin:8px 0 14px 0; color:var(--wae-muted); font-size:0.95rem; }
+
+.wae-form { display:block; }
+.wae-label { display:block; margin-top:0.55rem; font-size:0.9rem; color:var(--wae-text); }
+.wae-input { width:100%; padding:0.85rem 1rem; margin-top:8px; border-radius:10px; border:1px solid #e6e9ee; background:#f8fbff; color:var(--wae-text); box-sizing:border-box; }
+.wae-input:focus { outline:none; box-shadow: 0 6px 18px rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.32); }
+
+.wae-link { color:var(--wae-text); text-decoration:none; font-size:0.95rem; }
+.wae-link:hover { text-decoration:underline; color:var(--wae-nav-bg); }
+
+.wae-btn-block { display:block; width:100%; padding:0.9rem; border-radius:999px; font-weight:700; }
+@media (max-width: 480px) {
+  .wae-login-card { width: calc(100% - 2rem); padding: 1rem; }
+  .wae-login-wrapper { padding: 2rem 0; }
+}

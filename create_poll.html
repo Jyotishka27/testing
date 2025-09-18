@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Match Poll - Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+  <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg">
+    <h1 class="text-2xl font-bold text-green-400 mb-6">Create Match Poll</h1>
+
+    <form id="pollForm" class="space-y-4">
+      <div>
+        <label class="block text-gray-300 mb-1">Match Details</label>
+        <input type="text" id="pollQuestion" placeholder="Match on Saturday TurfXL at 11pm"
+               class="w-full p-3 rounded-lg text-black" required>
+      </div>
+
+      <div>
+        <label class="block text-gray-300 mb-1">Status</label>
+        <select id="pollStatus" class="w-full p-3 rounded-lg text-black">
+          <option value="ACTIVE">Active</option>
+          <option value="CLOSED">Closed</option>
+        </select>
+      </div>
+
+      <button type="submit" class="w-full bg-green-500 hover:bg-green-600 py-3 rounded-lg font-semibold">
+        Release Poll
+      </button>
+    </form>
+
+    <button type="button" id="closePollBtn" 
+      class="w-full bg-red-500 hover:bg-red-600 py-3 rounded-lg font-semibold mt-3">
+      Close Current Poll
+    </button>
+
+    <p id="statusMsg" class="mt-4 text-sm text-gray-400"></p>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, addDoc, collection, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+      storageBucket: "we-are-eleven.firebasestorage.app",
+      messagingSenderId: "446706356039",
+      appId: "1:446706356039:web:54cc424f2a8178ae824662"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Create poll form handler
+    document.getElementById("pollForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const question = document.getElementById("pollQuestion").value.trim();
+      const status = document.getElementById("pollStatus").value;
+
+      try {
+        // Save as current poll
+        await setDoc(doc(db, "polls", "current"), {
+          question,
+          status,
+          createdAt: serverTimestamp()
+        });
+
+        // Save into history
+        await addDoc(collection(db, "polls"), {
+          question,
+          status,
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("statusMsg").textContent = "✅ Poll released successfully!";
+      } catch (err) {
+        console.error(err);
+        document.getElementById("statusMsg").textContent = "❌ Failed to release poll.";
+      }
+    });
+
+    // Close poll handler
+    document.getElementById("closePollBtn").addEventListener("click", async () => {
+      const pollRef = doc(db, "polls", "current");
+      const snap = await getDoc(pollRef);
+      if (!snap.exists()) {
+        document.getElementById("statusMsg").textContent = "❌ No active poll to close.";
+        return;
+      }
+
+      const data = snap.data();
+      try {
+        // Archive poll into history with CLOSED status
+        await addDoc(collection(db, "polls"), {
+          ...data,
+          status: "CLOSED",
+          closedAt: serverTimestamp()
+        });
+
+        // Delete current poll
+        await deleteDoc(pollRef);
+
+        document.getElementById("statusMsg").textContent = "✅ Poll closed and moved to history.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById("statusMsg").textContent = "❌ Failed to close poll.";
+      }
+    });
+  </script>
+
+</body>
+</html>

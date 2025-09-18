@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+
+  <header class="bg-gray-950 shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <h1 class="text-2xl font-bold text-green-400">Admin Dashboard</h1>
+      <nav class="space-x-6">
+        <a href="index.html" class="text-gray-300 hover:text-green-400">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container mx-auto p-6">
+    <div class="flex gap-6 mb-6">
+      <a href="create_poll.html" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-lg shadow-lg">Host a Poll</a>
+      <a href="football_auctioneer.html" class="bg-blue-500 hover:bg-blue-600 px-6 py-3 rounded-lg shadow-lg">Host an Auction</a>
+    </div>
+
+    <!-- Current Poll -->
+    <section class="bg-gray-800 p-6 rounded-xl shadow-lg">
+      <h2 class="text-xl font-bold text-green-400 mb-4">Current Poll & Results</h2>
+      <div id="pollContainer">Loading poll...</div>
+    </section>
+
+    <!-- Poll History -->
+    <section class="bg-gray-800 p-6 rounded-xl shadow-lg mt-6">
+      <h2 class="text-xl font-bold text-green-400 mb-4">Poll History</h2>
+      <div id="pollHistory">Loading...</div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-950 py-6 text-center text-gray-400 mt-6">
+    <p>© 2025 We Are Eleven. All Rights Reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+      storageBucket: "we-are-eleven.firebasestorage.app",
+      messagingSenderId: "446706356039",
+      appId: "1:446706356039:web:54cc424f2a8178ae824662"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const pollContainer = document.getElementById("pollContainer");
+    const pollHistory = document.getElementById("pollHistory");
+    const pollRef = doc(db, "polls", "current");
+    const votesCol = collection(pollRef, "votes");
+
+    // Listen to current poll
+    onSnapshot(pollRef, (snap) => {
+      if (!snap.exists()) {
+        pollContainer.innerHTML = "<p>No active poll.</p>";
+        return;
+      }
+      const poll = snap.data();
+      let html = `
+        <h3 class="text-lg font-semibold mb-2">${poll.question}</h3>
+        <p class="text-sm text-gray-400 mb-4">Status: ${poll.status}</p>
+        <h4 class="font-semibold mb-4">Votes:</h4>
+        <div id="voteList"></div>
+      `;
+      pollContainer.innerHTML = html;
+    });
+
+    // Live grouped votes
+    onSnapshot(votesCol, (snapshot) => {
+      const voteList = document.getElementById("voteList");
+      if (!voteList) return;
+
+      let groups = { Yes: [], No: [], Maybe: [] };
+
+      snapshot.forEach(docSnap => {
+        const v = docSnap.data();
+        if (groups[v.choice]) {
+          groups[v.choice].push(v.name || v.email || "Anonymous");
+        }
+      });
+
+      voteList.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-green-700 p-4 rounded-lg shadow">
+            <h4 class="font-semibold mb-2">✅ Yes (${groups.Yes.length})</h4>
+            <ul class="list-disc list-inside text-sm">
+              ${groups.Yes.map(p => `<li>${p}</li>`).join("") || "<li>—</li>"}
+            </ul>
+          </div>
+
+          <div class="bg-red-700 p-4 rounded-lg shadow">
+            <h4 class="font-semibold mb-2">❌ No (${groups.No.length})</h4>
+            <ul class="list-disc list-inside text-sm">
+              ${groups.No.map(p => `<li>${p}</li>`).join("") || "<li>—</li>"}
+            </ul>
+          </div>
+
+          <div class="bg-yellow-600 p-4 rounded-lg shadow">
+            <h4 class="font-semibold mb-2">🤔 Maybe (${groups.Maybe.length})</h4>
+            <ul class="list-disc list-inside text-sm">
+              ${groups.Maybe.map(p => `<li>${p}</li>`).join("") || "<li>—</li>"}
+            </ul>
+          </div>
+        </div>
+      `;
+    });
+
+    // Poll history listener
+    const pollsCol = collection(db, "polls");
+    const q = query(pollsCol, orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+      pollHistory.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        if (docSnap.id === "current") return; // skip live poll
+        const poll = docSnap.data();
+        const created = poll.createdAt?.toDate?.().toLocaleString() || "Unknown";
+        pollHistory.innerHTML += `
+          <div class="mb-4 p-4 bg-gray-700 rounded-lg">
+            <h3 class="font-semibold">${poll.question}</h3>
+            <p class="text-sm text-gray-400">Status: ${poll.status} | Created: ${created}</p>
+          </div>
+        `;
+      });
+      if (!pollHistory.innerHTML) {
+        pollHistory.innerHTML = "<p>No past polls yet.</p>";
+      }
+    });
+  </script>
+
+</body>
+</html>

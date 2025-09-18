@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Payment — We Are Eleven</title>
+  <style>body{font-family:Inter,system-ui,Arial;margin:24px} .card{max-width:520px;margin:0 auto;padding:20px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.08)} button{padding:10px 14px;border-radius:8px}</style>
+</head>
+<body>
+  <div class="card">
+    <h2>Payment</h2>
+    <p id="planInfo"></p>
+    <p>This is a dummy payment page. Clicking the button below will simulate a successful payment and create your account.</p>
+    <button id="dummyPayBtn">Pay (Dummy) — Complete Payment</button>
+    <p style="margin-top:12px;color:#666;font-size:13px">If you wish to cancel, return to <a href="/register.html">registration</a>.</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.16.0/firebase-app.js';
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.16.0/firebase-auth.js';
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const plan = sessionStorage.getItem('wae_selected_plan') || 'gold';
+    const planLabel = sessionStorage.getItem('wae_selected_plan_label') || plan;
+    document.getElementById('planInfo').innerText = `Selected plan: ${planLabel}`;
+
+    const regDataStr = sessionStorage.getItem('wae_registration_data');
+    if (!regDataStr) {
+      alert('No registration data found. Please register first.');
+      window.location.href = '/register.html';
+    }
+
+    document.getElementById('dummyPayBtn').addEventListener('click', async (e) => {
+      e.currentTarget.disabled = true;
+      e.currentTarget.innerText = 'Processing...';
+      setTimeout(async () => {
+        try {
+          const regData = JSON.parse(sessionStorage.getItem('wae_registration_data'));
+          if (!regData) throw new Error('Registration data missing');
+          const module = await import('./_finalize_registration.js');
+          await module.finalizeRegistrationAndCreateUser(regData, plan);
+        } catch (err) {
+          console.error('Payment/registration finalize failed', err);
+          alert('Something went wrong: ' + (err.message || err));
+          e.currentTarget.disabled = false;
+          e.currentTarget.innerText = 'Pay (Dummy) — Complete Payment';
+        }
+      }, 700);
+    });
+  </script>
+</body>
+</html>

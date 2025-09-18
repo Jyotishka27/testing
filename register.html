@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — We Are Eleven</title>
+  <link rel="stylesheet" href="/wae-colors.css" />
+  <style>
+    body{font-family:Inter,system-ui,Arial;margin:24px}
+    .card{max-width:520px;margin:0 auto;padding:20px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+    label{display:block;margin-top:12px}
+    input{width:100%;padding:10px;margin-top:6px;border-radius:6px;border:1px solid #ddd}
+    button{margin-top:16px;padding:10px 16px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Create account</h2>
+    <p id="planNotice"></p>
+    <form id="registerForm">
+      <label>Full name
+        <input id="fullname" name="fullname" placeholder="Your full name" required />
+      </label>
+      <label>Email
+        <input id="email" name="email" type="email" placeholder="you@example.com" required />
+      </label>
+      <label>Password
+        <input id="password" name="password" type="password" placeholder="Choose a strong password" required />
+      </label>
+      <button type="submit" id="registerBtn">Continue</button>
+    </form>
+    <p style="margin-top:12px;font-size:13px;color:#666">Already have an account? <a href="/login.html">Log in</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.16.0/firebase-app.js';
+    import { getAuth, fetchSignInMethodsForEmail } from 'https://www.gstatic.com/firebasejs/10.16.0/firebase-auth.js';
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const planNotice = document.getElementById('planNotice');
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+
+    const selectedPlan = sessionStorage.getItem('wae_selected_plan') || 'bronze';
+    const selectedLabel = sessionStorage.getItem('wae_selected_plan_label') || selectedPlan;
+    planNotice.innerText = `Selected plan: ${selectedLabel}`;
+
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      registerBtn.disabled = true;
+      registerBtn.innerText = 'Please wait...';
+
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      if (!fullname || !email || !password) {
+        alert('Please fill all fields');
+        registerBtn.disabled = false;
+        registerBtn.innerText = 'Continue';
+        return;
+      }
+
+      try {
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (methods && methods.length) {
+          if (!confirm('An account with this email already exists. Go to login?')) {
+            registerBtn.disabled = false;
+            registerBtn.innerText = 'Continue';
+            return;
+          }
+          window.location.href = '/login.html';
+          return;
+        }
+      } catch (err) { console.warn('Could not check email methods', err); }
+
+      const regData = { fullname, email, password };
+      sessionStorage.setItem('wae_registration_data', JSON.stringify(regData));
+
+      const freePlans = ['bronze', 'free'];
+      if (freePlans.includes(selectedPlan)) {
+        try {
+          const module = await import('./_finalize_registration.js');
+          await module.finalizeRegistrationAndCreateUser(regData, selectedPlan);
+        } catch (err) {
+          console.error(err);
+          alert('Registration failed: ' + (err.message || err));
+          registerBtn.disabled = false;
+          registerBtn.innerText = 'Continue';
+        }
+      } else {
+        window.location.href = '/payment.html';
+      }
+    });
+  </script>
+</body>
+</html>

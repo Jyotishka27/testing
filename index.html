@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home - We Are Eleven</title>
+  <link rel="canonical" href="https://weareeleven.example/home" />
+  <link rel="me" href="https://www.instagram.com/we.are.eleven.official/" />
+  <link rel="icon" href="assets/img/favicon.png" />
+
+  <!-- Open Graph / Twitter for better shares -->
+  <meta property="og:title" content="We Are Eleven — Uniting Football Enthusiasts, One Goal at a Time" />
+  <meta property="og:description" content="Join a growing community of players, fans, and organizers. Fixtures, highlights, photos, and more." />
+  <meta property="og:image" content="assets/img/hero-stadium-og.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: white;
+    }
+    .nav-link{color:#4b5563;font-weight:500;text-decoration:none;transition:color .2s ease;}
+    .nav-link:hover{color:#374151}
+    .nav-link.active{color:#dc2626}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .watermark{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:2rem}
+    .watermark img{opacity:.06;width:500px;max-width:90%}
+  </style>
+</head>
+<body class="text-black">
+
+  <!-- ✅ Header -->
+  <div id="site-header"></div>
+
+  <!-- 🏟️ Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.35),rgba(0,0,0,0.8))] z-0"></div>
+    <div class="absolute inset-0 bg-cover bg-center z-[-1]" style="background-image:url('assets/img/hero-stadium.jpg');"></div>
+    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 text-center text-white">
+      <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">
+        Uniting Football Enthusiasts, One Goal at a Time
+      </h1>
+      <p class="mt-4 text-lg text-gray-200">Join a growing community of players, fans, and organizers.</p>
+      <div class="mt-8 flex items-center justify-center gap-3">
+        <a href="join.html" class="inline-flex items-center justify-center px-10 py-4 rounded-full bg-green-500 hover:bg-green-600 shadow-lg text-white text-lg font-semibold transition">
+          Join Us
+        </a>
+        <a href="https://www.instagram.com/we.are.eleven.official/" target="_blank" rel="noopener" aria-label="Follow us on Instagram"
+           class="inline-flex items-center justify-center px-5 py-4 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-base font-semibold transition">
+          <span class="mr-2">📸</span> @we.are.eleven.official
+        </a>
+      </div>
+      <!-- Tournament banner -->
+      <div class="mt-10 inline-flex items-center gap-3 bg-white/10 backdrop-blur rounded-2xl px-5 py-3 border border-white/20">
+        <span class="text-xl">🏆</span>
+        <div class="text-left">
+          <div class="font-semibold">Independence Cup 2025</div>
+          <div class="text-sm text-gray-200">Official results & highlights</div>
+        </div>
+        <a href="team_results.html" class="ml-4 text-sm font-semibold underline decoration-2 underline-offset-4">View Results</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 💡 Why Join Us -->
+  <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <h2 class="text-3xl font-bold text-center mb-10">Why Join Us?</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <a href="tournament.html" class="block rounded-2xl border bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div class="text-3xl mb-3">⚽</div>
+        <h3 class="font-semibold mb-1">Competitive Tournaments</h3>
+        <p class="text-gray-600 text-sm">Well-structured fixtures, fair play, and thrilling matchdays.</p>
+      </a>
+      <div class="rounded-2xl border bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div class="text-3xl mb-3">🤝</div>
+        <h3 class="font-semibold mb-1">Community Spirit</h3>
+        <p class="text-gray-600 text-sm">Meet passionate players and build lasting friendships.</p>
+      </div>
+      <div class="rounded-2xl border bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div class="text-3xl mb-3">🏆</div>
+        <h3 class="font-semibold mb-1">Recognition & Awards</h3>
+        <p class="text-gray-600 text-sm">Trophies, medals, and shout-outs for standout performances.</p>
+      </div>
+      <a href="gallery.html" class="block rounded-2xl border bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div class="text-3xl mb-3">📸</div>
+        <h3 class="font-semibold mb-1">Event Highlights & Photos</h3>
+        <p class="text-gray-600 text-sm">Relive the best moments with curated galleries and reels.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ▶️ Combined Highlights + Action Shots -->
+  <section class="bg-slate-50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <!-- Left: Video -->
+        <div>
+          <h2 class="text-3xl font-bold mb-4">Highlights</h2>
+          <div class="aspect-video rounded-2xl overflow-hidden shadow">
+            <iframe class="w-full h-full"
+              src="https://www.youtube.com/@WeAreElevenCommunity"
+              title="Independence Cup 2025 Highlights"
+              frameborder="0"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>
+          <a href="https://www.youtube.com/@weareeleven" target="_blank" rel="noopener"
+             class="inline-flex mt-4 items-center rounded-full border px-4 py-2 text-sm font-semibold bg-white hover:bg-slate-100">
+            More on YouTube →
+          </a>
+        </div>
+
+        <!-- Right: 2x2 photos -->
+        <div>
+          <h2 class="text-3xl font-bold mb-4">Action Shots</h2>
+          <div class="grid grid-cols-2 gap-3">
+            <a href="gallery.html" class="group rounded-2xl overflow-hidden border bg-white shadow-sm">
+              <img src="squad.jpg" alt="Match action" class="w-full h-full object-cover aspect-square transition-transform duration-200 group-hover:scale-[1.03]" loading="lazy" />
+            </a>
+            <a href="tournament_gallery.html" class="group rounded-2xl overflow-hidden border bg-white shadow-sm">
+              <img src="independence_cup_poster.jpg" alt="Match action" class="w-full h-full object-cover aspect-square transition-transform duration-200 group-hover:scale-[1.03]" loading="lazy" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instagram handle CTA below -->
+      <div class="mt-8 flex items-center justify-between flex-wrap gap-3">
+        <div class="text-lg font-semibold">Follow us on Instagram</div>
+        <a href="https://www.instagram.com/we.are.eleven.official/" target="_blank" rel="noopener"
+           class="inline-flex items-center rounded-full bg-black text-white px-4 py-2 text-sm font-semibold hover:bg-gray-800">
+          📸 @we.are.eleven.official
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 💬 Testimonials -->
+  <section class="bg-white py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold mb-8">What Captains Say</h2>
+      <div id="testimonial" class="rounded-2xl border bg-white p-8 shadow-sm min-h-[140px] flex flex-col items-center justify-center">
+        <p class="text-lg leading-relaxed" id="testimonial-text">
+          “Best organized amateur tournament in the city!” – Subhomoy, Captain of Amigos FC
+        </p>
+      </div>
+      <div class="mt-6 flex items-center justify-center gap-3">
+        <button id="prevTest" class="px-3 py-1 rounded-full border bg-white hover:bg-slate-100">Prev</button>
+        <button id="nextTest" class="px-3 py-1 rounded-full border bg-white hover:bg-slate-100">Next</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ✅ Footer -->
+  <footer class="bg-gray-950 py-6 text-center text-gray-400 mt-0">
+    <p>© 2025 Football Community. All Rights Reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { injectHeader } from "./header.js";
+    import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
+    injectHeader("#site-header", { active: "home" });
+    try {
+      const maps = await loadTeams();
+      hydrateTeamLogos(document, maps);
+    } catch (e) { console.warn(e); }
+
+    // Simple testimonials slider
+    const quotes = [
+      "“Best organized amateur tournament in the city!” – Subhojit, Captain of Amigos FC",
+      "“Competitive yet friendly—exactly what we wanted.” – Ayon, Thunderbolt",
+      "“Great refereeing and fixtures that run on time.” – Rahul, White Panthers"
+    ];
+    let qi = 0;
+    const tEl = document.getElementById('testimonial-text');
+    const prev = document.getElementById('prevTest');
+    const next = document.getElementById('nextTest');
+    function show(i){ if(tEl){ tEl.textContent = quotes[i]; } }
+    if(prev) prev.addEventListener('click', ()=>{ qi=(qi-1+quotes.length)%quotes.length; show(qi); });
+    if(next) next.addEventListener('click', ()=>{ qi=(qi+1)%quotes.length; show(qi); });
+  </script>
+
+</body>
+</html>

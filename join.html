@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Memberships — We Are Eleven</title>
+  <link rel="canonical" href="https://weareeleven.example/memberships" />
+  <link rel="me" href="https://www.instagram.com/we.are.eleven.official/" />
+  <link rel="icon" href="assets/img/favicon.png" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="We Are Eleven — Memberships" />
+  <meta property="og:description" content="Choose a membership to play matches, vote in polls and get perks." />
+  <meta property="og:image" content="assets/img/hero-stadium-og.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: white; }
+    .nav-link{color:#4b5563;font-weight:500;text-decoration:none;transition:color .2s ease;} 
+    .nav-link:hover{color:#374151} 
+    .nav-link.active{color:#dc2626}
+    .wae-panel{background:#fff;border-radius:1rem;padding:1.25rem;border:1px solid rgba(15,23,42,0.04);box-shadow:0 6px 18px rgba(15,23,42,0.04)}
+    .wae-muted{color:#6b7280}
+    .wae-btn-primary{background:#10b981;color:#fff;padding:.75rem 1rem;border-radius:.6rem;font-weight:600;display:inline-block;text-align:center}
+    .wae-btn-primary:disabled{opacity:.6}
+    .wae-membership-section{max-width:1100px;margin:2.5rem auto;padding:2rem}
+    .wae-membership-title{font-size:2rem;font-weight:800;margin-bottom:.5rem}
+    .wae-membership-subtitle{color:#6b7280;margin-bottom:1.25rem}
+    .wae-cards-grid{display:grid;grid-template-columns:repeat(1,1fr);gap:1rem}
+    @media(min-width:640px){.wae-cards-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:1024px){.wae-cards-grid{grid-template-columns:repeat(4,1fr)}}
+    .wae-card{background:#fff;border-radius:.9rem;padding:1.25rem;border:1px solid rgba(15,23,42,0.04);display:flex;flex-direction:column;justify-content:space-between}
+    .wae-price{font-size:1.25rem;font-weight:800;margin:0.25rem 0}
+    .wae-features{color:#374151;margin:0.5rem 0 1rem 0;padding-left:1rem}
+    .wae-ribbon{position:relative;box-shadow:0 8px 24px rgba(16,185,129,0.08)}
+    .wae-ribbon::after{content:'Best value';position:absolute;top:-12px;right:-12px;background:#f59e0b;color:#111827;padding:.3rem .6rem;border-radius:.5rem;font-weight:700;font-size:.75rem}
+  </style>
+</head>
+<body class="text-black">
+  <div id="site-header"></div>
+
+  <section class="bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.03),rgba(0,0,0,0))] py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">Choose Your Membership</h1>
+      <p class="mt-3 text-lg wae-muted max-w-2xl mx-auto">Free Play is for community access only. To play matches and vote, choose Silver, Gold, or Platinum — each includes bundled games.</p>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div id="plans" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+
+    <div class="mt-10 text-center wae-muted">Need help choosing? <a href="about_us.html" class="wae-link">Contact us</a></div>
+  </main>
+
+  <footer class="bg-gray-950 py-6 text-center text-gray-400 mt-0"> 
+    <p>© 2025 Football Community. All Rights Reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { injectHeader } from "./header.js";
+    injectHeader("#site-header", { active: "Memberships" });
+
+    // Static membership plans
+    const PLANS = {
+      bronze: { code: 'bronze', title: 'Bronze (Free Play)', price: 0, games: 0, can_vote: false, benefits: ['Community access', 'Voting not allowed'] },
+      silver: { code: 'silver', title: 'Silver', price: 1125, games: 4, can_vote: true, benefits: ['Can vote in polls', 'Silver badge'] },
+      gold: { code: 'gold', title: 'Gold', price: 3375, games: 12, can_vote: true, benefits: ['Can vote in polls', 'Priority perks', 'Gold badge'] },
+      platinum: { code: 'platinum', title: 'Platinum', price: 13500, games: 48, can_vote: true, benefits: ['Can vote in polls', 'VIP perks', 'Platinum badge'] }
+    };
+
+    const plansContainer = document.getElementById('plans');
+
+    function formatPrice(n){ return n === 0 ? '₹0' : '₹' + n.toLocaleString(); }
+
+    function renderPlans(plans){
+      plansContainer.innerHTML = Object.values(plans).map(plan => `
+        <div class="wae-card ${plan.code === 'gold' ? 'wae-ribbon' : ''}">
+          <div>
+            <h3 class="text-xl font-semibold mb-2">${plan.title}</h3>
+            <p class="wae-price">${formatPrice(plan.price)}</p>
+            <p class="wae-muted mb-3">Includes ${plan.games} game${plan.games !== 1 ? 's' : ''}</p>
+            <ul class="wae-features text-sm">
+              ${plan.benefits.map(b => `<li>• ${b}</li>`).join('')}
+            </ul>
+          </div>
+          <a href="register.html?plan=${plan.code}" class="wae-btn-primary w-full inline-block text-center mt-2">${plan.price === 0 ? 'Join Free' : 'Join ' + plan.title.split(' ')[0]}</a>
+        </div>
+      `).join('');
+    }
+
+    renderPlans(PLANS);
+  </script>
+</body>
+</html>

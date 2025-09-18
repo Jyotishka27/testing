@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - We Are Eleven</title>
+  <link rel="canonical" href="https://weareeleven.example/login" />
+  <link rel="me" href="https://www.instagram.com/we.are.eleven.official/" />
+  <link rel="icon" href="assets/img/favicon.png" />
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="We Are Eleven — Login" />
+  <meta property="og:description" content="Sign in to manage your profile, membership and votes." />
+  <meta property="og:image" content="assets/img/hero-stadium-og.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* keep visual identity consistent with Home page */
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: white; }
+    .nav-link{color:#4b5563;font-weight:500;text-decoration:none;transition:color .2s ease;} 
+    .nav-link:hover{color:#374151} 
+    .nav-link.active{color:#dc2626}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+    .watermark{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-top:2rem}
+    .watermark img{opacity:.06;width:500px;max-width:90%}
+
+    /* small helpers to match "We Are Eleven" look for panels */
+    :root{
+      --wae-panel-bg:#ffffff;
+      --wae-muted:#6b7280;
+      --wae-accent:#10b981; /* green used on home CTA */
+      --wae-danger:#ef4444;
+      --wae-nav-bg:#111827;
+    }
+    .wae-panel{background:var(--wae-panel-bg); border-radius:1rem; padding:2rem; box-shadow:0 6px 18px rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.04)}
+    .wae-muted{color:var(--wae-muted)}
+    .wae-btn-primary{background:var(--wae-accent); color:white; padding:.75rem 1rem; border-radius:.75rem; font-weight:600}
+    .wae-btn-primary:disabled{opacity:.6}
+    .wae-link{color:var(--wae-accent); font-weight:600; text-decoration:underline}
+    .wae-input{width:100%; padding:.7rem .9rem; border-radius:.6rem; border:1px solid rgba(15,23,42,0.06); background:white}
+    .wae-label{display:block; margin-bottom:.75rem; font-weight:600; color:#111827}
+    .wae-error{color:var(--wae-danger)}
+    .wae-success{color:#059669}
+
+    /* responsive small card spacing to align with Home page visual scale */
+    @media (min-width: 768px){
+      main{padding-top:5rem}
+    }
+  </style>
+</head>
+<body class="text-black">
+  <!-- Header (same injection as Home page) -->
+  <div id="site-header"></div>
+
+  <main class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gray-50">
+    <div class="w-full max-w-lg">
+      <div class="bg-white shadow-xl rounded-2xl p-8">
+        <h1 class="text-3xl font-extrabold text-center mb-2">Sign in to your account</h1>
+        <p class="text-center text-gray-500 mb-8">Use your registered email to continue.</p>
+
+        <form id="loginForm" class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Email address</label>
+            <input id="email" type="email" name="email" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-3" 
+              placeholder="you@example.com">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Password</label>
+            <input id="password" type="password" name="password" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm p-3"
+              placeholder="••••••••">
+          </div>
+
+          <div class="flex items-center justify-between text-sm">
+            <a href="register.html" class="text-green-600 hover:text-green-700 font-medium">Create account</a>
+            <a href="forgetpassword.html" class="text-green-600 hover:text-green-700 font-medium">Forgot password?</a>
+          </div>
+
+          <button id="loginBtn" type="submit"
+            class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-md shadow">
+            Login
+          </button>
+        </form>
+
+        <p class="mt-6 text-center text-sm text-gray-500">
+          or <a href="join.html" class="text-green-600 hover:text-green-700 font-medium">Join the community</a>
+        </p>
+
+        <p id="authMessage" class="text-center text-sm mt-4"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-950 py-6 text-center text-gray-400 mt-0"> 
+    <p>© 2025 Football Community. All Rights Reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { injectHeader } from "./header.js";
+    injectHeader("#site-header", { active: "login" });
+
+    // Firebase auth (kept inline but tidy and using correct IDs)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const loginForm = document.getElementById('loginForm');
+    const authMessage = document.getElementById('authMessage');
+    const loginBtn = document.getElementById('loginBtn');
+
+    function setMessage(text, kind = 'info'){
+      authMessage.textContent = text;
+      authMessage.className = 'text-center text-sm mt-3';
+      if(kind === 'error') authMessage.classList.add('wae-error');
+      if(kind === 'success') authMessage.classList.add('wae-success');
+      if(kind === 'info') authMessage.classList.add('wae-muted');
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setMessage('', 'info');
+      loginBtn.disabled = true;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      try{
+        await signInWithEmailAndPassword(auth, email, password);
+        setMessage('✅ Login successful. Redirecting...', 'success');
+        // small delay for UX, then redirect
+        setTimeout(() => { window.location.href = 'profile.html'; }, 600);
+      }catch(err){
+        console.error('Login error', err);
+        setMessage('❌ ' + (err.message || 'Login failed'), 'error');
+        loginBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('forgotLink')?.addEventListener('click', async (ev) => {
+      ev.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      if(!email){ setMessage('❌ Enter your email above to reset password.', 'error'); return; }
+      try{
+        await sendPasswordResetEmail(auth, email);
+        setMessage('✅ Password reset email sent. Check your inbox.', 'success');
+      }catch(err){
+        console.error('Reset error', err);
+        setMessage('❌ ' + (err.message || 'Could not send reset email'), 'error');
+      }
+    });
+  </script>
+</body>
+</html>

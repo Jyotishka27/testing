@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>We Are Eleven — Community Photos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #1e293b; }
+    .section-header { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
+    .section-header::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #64748b, transparent); animation: shimmer 3s infinite; }
+    @keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+    .photo-card { border-radius: 1rem; border: 1px solid #e5e7eb; overflow: hidden; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .photo-img { display: block; width: 100%; height: 220px; object-fit: cover; transition: transform .35s ease; }
+    .photo-card:hover .photo-img { transform: scale(1.03); }
+    .photo-meta { padding: .85rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+    .chip { font-size: .72rem; padding: .2rem .55rem; border-radius: 9999px; border: 1px solid #cbd5e1; background:#f8fafc; white-space: nowrap; }
+    .lightbox-open { overflow: hidden; }
+  </style>
+
+    <style data-gallery-enhanced>
+      .gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+      @media(min-width:640px){.gallery-grid{grid-template-columns:repeat(3,1fr)}}
+      @media(min-width:1024px){.gallery-grid{grid-template-columns:repeat(4,1fr)}}
+      .gallery-item{position:relative;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;background:#fff}
+      .gallery-item::after{content:"";display:block;padding-bottom:100%}
+      .gallery-item > *{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+      .gallery-item:focus-within{outline:2px solid #111827;outline-offset:2px}
+    </style>
+    
+</head>
+<body class="flex flex-col min-h-screen">
+  <!-- Header mount -->
+  <div id="site-header"></div>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.35),rgba(0,0,0,0.8))] z-0"></div>
+    <div class="absolute inset-0 bg-cover bg-center z-[-1]" style="background-image:url('assets/img/hero-community.jpg');"></div>
+    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 text-center text-white">
+      <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">We Are Eleven — Community Gallery</h1>
+      <p class="mt-3 text-lg text-gray-200">Tournaments days, meetups, volunteers, watch parties, and off‑pitch memories.</p>
+    </div>
+  </section>
+
+  <main class="flex-grow max-w-7xl mx-auto p-6 space-y-10">
+    <section class="section-header rounded-2xl shadow-lg p-8">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900">Community Photos</h2>
+          <p class="mt-2 text-gray-600">This page is for day-to-day We Are Eleven photos — not tournament action.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="downloadAllBtn" class="px-3 py-2 rounded-xl border bg-white hover:bg-slate-50 text-sm">Download selected</button>
+          <label class="px-3 py-2 rounded-xl border bg-white hover:bg-slate-50 text-sm cursor-pointer">
+            <input type="file" id="uploader" accept="image/*" class="hidden" multiple>
+            Upload
+          </label>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="mt-6 flex flex-wrap items-center gap-2">
+        <button class="filter-btn chip" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-btn chip" data-filter="Tournaments">Tournaments</button>
+        <button class="filter-btn chip" data-filter="meetup">Meetups</button>
+        <button class="filter-btn chip" data-filter="volunteer">Volunteering</button>
+        <button class="filter-btn chip" data-filter="watch">Watch Parties</button>
+        <button class="filter-btn chip" data-filter="bts">Behind the Scenes</button>
+      </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="section-header rounded-2xl shadow-lg p-6">
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="gallery">
+        
+        <!-- SAMPLE CARDS — replace src with real paths -->
+        
+        <figure class="photo-card" data-category="Tournaments" data-title="Independence Cup 2025 Squad">
+          <img class="photo-img" src="groupphoto.jpg" alt="Tournaments drills" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Tournaments</span>
+            <span class="chip">Tournaments</span>
+          </figcaption>
+        </figure>
+        
+        <figure class="photo-card" data-category="Tournaments" data-title="Organisers with Winners and Runners Up">
+          <img class="photo-img" src="organisers_winners_runnersup.jpg" alt="Tournaments drills" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Tournaments</span>
+            <span class="chip">Tournaments</span>
+          </figcaption>
+        </figure>
+        
+        <figure class="photo-card" data-category="meetup" data-title="Weekend meetup at the cafe">
+          <img class="photo-img" src="photos/community/meetup-1.jpg" alt="Weekend meetup" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Weekend Meetup</span>
+            <span class="chip">Meetups</span>
+          </figcaption>
+        </figure>
+        <figure class="photo-card" data-category="watch" data-title="Champions League watch party">
+          <img class="photo-img" src="photos/community/watch-1.jpg" alt="Watch party" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Watch Party</span>
+            <span class="chip">Watch</span>
+          </figcaption>
+        </figure>
+        <figure class="photo-card" data-category="volunteer" data-title="Gear sorting with volunteers">
+          <img class="photo-img" src="photos/community/volunteer-1.jpg" alt="Volunteering" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Volunteer Crew</span>
+            <span class="chip">Volunteering</span>
+          </figcaption>
+        </figure>
+        <figure class="photo-card" data-category="bts" data-title="Meet the organizers">
+          <img class="photo-img" src="photos/community/bts-1.jpg" alt="Behind the scenes" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Organizers</span>
+            <span class="chip">BTS</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center hidden z-50">
+    <button id="lbClose" class="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white" aria-label="Close (Esc)">✕</button>
+    <button id="lbPrev" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white" aria-label="Previous (←)">‹</button>
+    <figure class="max-w-5xl w-[92vw] md:w-[80vw]">
+      <img loading="lazy" id="lbImg" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-xl" />
+      <figcaption id="lbCap" class="mt-3 text-center text-gray-200"></figcaption>
+    </figure>
+    <button id="lbNext" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white" aria-label="Next (→)">›</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-950 py-8 text-center text-gray-400 mt-12">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="text-lg">© 2025 Football Community. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Header injection -->
+  <script type="module">
+    import { injectHeader } from "./header.js";
+    injectHeader("#site-header", { active: "photos" });
+  </script>
+
+  <!-- Gallery interactions (same as tournament page) -->
+  <script>
+    const filterBtns = Array.from(document.querySelectorAll('.filter-btn'));
+    const gallery = document.getElementById('gallery');
+    const cards = Array.from(gallery.querySelectorAll('.photo-card'));
+
+    function applyFilter(cat) {
+      cards.forEach(card => {
+        const show = cat === 'all' || card.dataset.category === cat;
+        card.classList.toggle('hidden', !show);
+      });
+    }
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
+        btn.setAttribute('aria-pressed', 'true');
+        applyFilter(btn.dataset.filter);
+      });
+    });
+
+    // Lightbox
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbCap = document.getElementById('lbCap');
+    const lbClose = document.getElementById('lbClose');
+    const lbPrev = document.getElementById('lbPrev');
+    const lbNext = document.getElementById('lbNext');
+
+    let currentIndex = -1;
+    const visibleCards = () => cards.filter(c => !c.classList.contains('hidden'));
+
+    function openAt(index) {
+      const list = visibleCards();
+      if (!list.length) return;
+      currentIndex = Math.max(0, Math.min(index, list.length - 1));
+      const fig = list[currentIndex];
+      const img = fig.querySelector('img');
+      lbImg.src = img.src;
+      lbImg.alt = img.alt || '';
+      lbCap.textContent = fig.dataset.title || img.alt || '';
+      lb.classList.remove('hidden');
+      document.body.classList.add('lightbox-open');
+    }
+
+    function closeLb() { lb.classList.add('hidden'); document.body.classList.remove('lightbox-open'); lbImg.src=''; }
+    function step(dir) {
+      const list = visibleCards();
+      if (!list.length) return;
+      currentIndex = (currentIndex + dir + list.length) % list.length;
+      const fig = list[currentIndex];
+      const img = fig.querySelector('img');
+      lbImg.src = img.src; lbImg.alt = img.alt || ''; lbCap.textContent = fig.dataset.title || img.alt || '';
+    }
+
+    cards.forEach((fig, i) => {
+      fig.addEventListener('click', () => {
+        const vis = visibleCards(); const idx = vis.indexOf(fig); openAt(idx === -1 ? 0 : idx);
+      });
+    });
+
+    lbClose.addEventListener('click', closeLb);
+    lbPrev.addEventListener('click', () => step(-1));
+    lbNext.addEventListener('click', () => step(1));
+    lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
+
+    // Uploader
+    const uploader = document.getElementById('uploader');
+    uploader.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files || []);
+      files.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const url = URL.createObjectURL(file);
+        const fig = document.createElement('figure');
+        fig.className = 'photo-card'; fig.dataset.category = 'bts'; fig.dataset.title = file.name;
+        fig.innerHTML = `
+          <img class="photo-img" src="${url}" alt="${file.name}" loading="lazy"/>
+          <figcaption class="photo-meta"><span class="text-sm font-medium truncate">${file.name}</span><span class="chip">Uploaded</span></figcaption>`;
+        fig.addEventListener('click', () => { const vis = visibleCards(); const idx = vis.indexOf(fig); openAt(idx === -1 ? 0 : idx); });
+        gallery.prepend(fig);
+      });
+      uploader.value = '';
+    });
+
+    document.getElementById('downloadAllBtn').addEventListener('click', () => {
+      alert('Select & download flow can be wired to a ZIP generator or backend.');
+    });
+  </script>
+</body>
+</html>

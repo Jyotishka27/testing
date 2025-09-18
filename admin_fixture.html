@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Fixtures - We Are Eleven</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      color: #1e293b;
+    }
+
+    .nav-link { color: #4b5563; font-weight: 500; text-decoration: none; transition: color 0.2s ease; }
+    .nav-link:hover { color: #374151; }
+    .nav-link.active { color: #dc2626; }
+
+    /* Hover effects */
+    .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .fixture-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.15); transition: all 0.2s ease-out; }
+
+    .team-logo { height: 50px; width: 50px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 8px rgb(0 0 0 / 0.1); transition: transform 0.2s ease; }
+    .team-logo:hover { transform: scale(1.05); }
+
+    .section-header { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
+    .section-header::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #64748b, transparent); animation: shimmer 3s infinite; }
+    @keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+
+    .group-card { background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+    .group-card:hover { border-color: #cbd5e1; box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
+
+    .match-card { background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%); border: 1px solid #e5e7eb; transition: all 0.2s ease; }
+    .match-card:hover { border-color: #d1d5db; transform: translateY(-2px); }
+
+    .knockout-card { background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; transition: all 0.3s ease; }
+    .knockout-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgb(0 0 0 / 0.1); }
+
+    .final-card { background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #fbbf24; position: relative; }
+    .final-card::before { content: '👑'; position: absolute; top: -10px; right: -10px; font-size: 1.5rem; background: #fbbf24; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+
+    .section-icon { display: inline-block; margin-right: 0.5rem; font-size: 1.2em; }
+    .matchday-badge { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; box-shadow: 0 2px 4px rgb(59 130 246 / 0.3); }
+    .vs-text { font-weight: 800; color: #64748b; text-shadow: 0 1px 2px rgb(0 0 0 / 0.1); }
+    .team-name { font-weight: 500; color: #374151; text-align: center; font-size: 0.875rem; margin-top: 0.5rem; }
+
+    /* scoreline + scorers */
+    .scoreline-badge { display:inline-block; padding:0.25rem 0.75rem; border-radius:9999px; background:linear-gradient(135deg,#111827,#1f2937); color:#fff; font-weight:700; box-shadow:0 2px 6px rgb(0 0 0 / 0.2); letter-spacing:0.5px }
+    .status-badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:9999px; font-weight:700; font-size:0.75rem; margin-left:0.5rem }
+    .status-live { background:#dc2626; color:#fff; animation:pulse 1.8s infinite; }
+    .status-ht { background:#f59e0b; color:#111827; }
+    .status-ft { background:#6b7280; color:#fff; }
+    @keyframes pulse { 0%{ box-shadow:0 0 0 0 rgba(220,38,38,.6) } 70%{ box-shadow:0 0 0 8px rgba(220,38,38,0) } 100%{ box-shadow:0 0 0 0 rgba(220,38,38,0) } }
+
+    .scorer-list { font-size:0.9rem; line-height:1.2; }
+    .scorer-item { display:flex; align-items:flex-start; gap:0.5rem; }
+    .scorer-bullet { font-size:0.9rem; opacity:0.6 }
+    .team-column { width: 48%; }
+    .fixture-rows { display:flex; justify-content:space-between; gap:1rem; }
+    .muted { color:#6b7280 }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Header -->
+<div id="site-header"></div>
+<!-- Main Content -->
+<main class="flex-grow max-w-7xl mx-auto p-6 space-y-12">
+<!-- Tournament Fixtures Section -->
+<section class="section-header rounded-2xl shadow-lg p-8">
+<div class="text-center mb-10">
+<h2 class="text-4xl font-bold text-gray-900 mb-2">
+<span class="section-icon">📅</span>Tournament Fixtures
+        </h2>
+<p class="text-gray-600 text-lg">Complete match schedule</p>
+<div class="mt-4">
+<button class="px-4 py-2 rounded-xl font-semibold bg-green-600 hover:bg-green-500 text-white" id="downloadExcelBtn">
+            Download Excel
+          </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl-grid-cols-3 xl:grid-cols-3 gap-6">
+<!-- Matchday Cards (sample set) -->
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md1-thunderbolt-messiah-fc">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 1</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" src="Thunderbolt.jpg"/>
+<span class="team-name">Thunderbolt</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Messiah FC.jpg"/>
+<span class="team-name">Messiah FC</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md2-amigos-fc-strawhat-pirates">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 2</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Amigos FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Amigos FC.jpg"/>
+<span class="team-name">Amigos FC</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" src="Strawhat Pirates.jpg"/>
+<span class="team-name">Strawhat Pirates</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md3-white-panthers-thunderbolt">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 3</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" src="White Panthers.jpg"/>
+<span class="team-name">White Panthers</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" src="Thunderbolt.jpg"/>
+<span class="team-name">Thunderbolt</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md4-red-bulls-eleven-amigos-fc">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 4</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" src="Red Bulls Eleven.jpg"/>
+<span class="team-name">Red Bulls Eleven</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Amigos FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Amigos FC.jpg"/>
+<span class="team-name">Amigos FC</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md5-messiah-fc-white-panthers">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 5</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Messiah FC.jpg"/>
+<span class="team-name">Messiah FC</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" src="White Panthers.jpg"/>
+<span class="team-name">White Panthers</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md6-strawhat-pirates-red-bulls-eleven">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 6</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" src="Strawhat Pirates.jpg"/>
+<span class="team-name">Strawhat Pirates</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" src="Red Bulls Eleven.jpg"/>
+<span class="team-name">Red Bulls Eleven</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md7-messiah-fc-thunderbolt">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 7</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Messiah FC.jpg"/>
+<span class="team-name">Messiah FC</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" src="Thunderbolt.jpg"/>
+<span class="team-name">Thunderbolt</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md8-strawhat-pirates-amigos-fc">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 8</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" src="Strawhat Pirates.jpg"/>
+<span class="team-name">Strawhat Pirates</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Amigos FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Amigos FC.jpg"/>
+<span class="team-name">Amigos FC</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md9-thunderbolt-white-panthers">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 9</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Thunderbolt" class="h-14 w-14 rounded-full shadow-md mb-3" src="Thunderbolt.jpg"/>
+<span class="team-name">Thunderbolt</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" src="White Panthers.jpg"/>
+<span class="team-name">White Panthers</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md10-amigos-fc-red-bulls-eleven">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 10</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Amigos FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Amigos FC.jpg"/>
+<span class="team-name">Amigos FC</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" src="Red Bulls Eleven.jpg"/>
+<span class="team-name">Red Bulls Eleven</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md11-white-panthers-messiah-fc">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 11</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="White Panthers" class="h-14 w-14 rounded-full shadow-md mb-3" src="White Panthers.jpg"/>
+<span class="team-name">White Panthers</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Messiah FC" class="h-14 w-14 rounded-full shadow-md mb-3" src="Messiah FC.jpg"/>
+<span class="team-name">Messiah FC</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+<div class="fixture-card match-card rounded-xl shadow-md p-6" data-fixture-id="md12-red-bulls-eleven-strawhat-pirates">
+<div class="flex justify-center mb-4"><span class="matchday-badge">Matchday 12</span></div>
+<div class="flex items-center justify-center gap-6">
+<div class="flex flex-col items-center">
+<img alt="Red Bulls Eleven" class="h-14 w-14 rounded-full shadow-md mb-3" src="Red Bulls Eleven.jpg"/>
+<span class="team-name">Red Bulls Eleven</span>
+</div>
+<span class="vs-text text-xl">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Strawhat Pirates" class="h-14 w-14 rounded-full shadow-md mb-3" src="Strawhat Pirates.jpg"/>
+<span class="team-name">Strawhat Pirates</span>
+</div>
+</div>
+<div class="mt-4 text-center space-y-3 fixture-data"></div>
+</div>
+</div>
+</section>
+<!-- Leaderboards Section -->
+<section class="section-header rounded-2xl shadow-lg p-8">
+<div class="flex items-center justify-between flex-wrap gap-3">
+<div>
+<h2 class="text-2xl font-bold text-gray-900 mb-1"><span class="section-icon">🥇</span>Leaderboards</h2>
+<p class="text-gray-600 text-sm">Aggregated across all matches.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 rounded-xl font-semibold text-white bg-emerald-600 hover:bg-emerald-500" id="fetchLeadersBtn">Refresh Leaderboards</button>
+<button class="px-4 py-2 rounded-xl font-semibold bg-slate-200 hover:bg-slate-300 text-slate-900" disabled="" id="dlScorersCsvBtn">Download Scorers CSV</button>
+<button class="px-4 py-2 rounded-xl font-semibold bg-slate-200 hover:bg-slate-300 text-slate-900" disabled="" id="dlAssistsCsvBtn">Download Assists CSV</button>
+</div>
+</div>
+<div class="mt-3 text-sm text-slate-600" id="leadersStatus"></div>
+<div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="rounded-xl border border-slate-200 overflow-hidden">
+<div class="bg-slate-100 px-4 py-2 font-semibold text-slate-700">Top Scorers</div>
+<table class="min-w-full text-sm">
+<thead class="bg-slate-50 text-slate-700">
+<tr>
+<th class="px-3 py-2 text-left">#</th>
+<th class="px-3 py-2 text-left">Player</th>
+<th class="px-3 py-2 text-left">Team</th>
+<th class="px-3 py-2 text-right">Goals</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200 bg-white" id="scorersBody"></tbody>
+</table>
+</div>
+<div class="rounded-xl border border-slate-200 overflow-hidden">
+<div class="bg-slate-100 px-4 py-2 font-semibold text-slate-700">Top Assists</div>
+<table class="min-w-full text-sm">
+<thead class="bg-slate-50 text-slate-700">
+<tr>
+<th class="px-3 py-2 text-left">#</th>
+<th class="px-3 py-2 text-left">Player</th>
+<th class="px-3 py-2 text-left">Team</th>
+<th class="px-3 py-2 text-right">Assists</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200 bg-white" id="assistsBody"></tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Knockout Stage Section -->
+<section class="section-header rounded-2xl shadow-lg p-8">
+<div class="text-center mb-10">
+<h2 class="text-4xl font-bold text-gray-900 mb-2"><span class="section-icon">🏆</span>Knockout Stage</h2>
+<p class="text-gray-600 text-lg">Championship elimination rounds</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+<div class="knockout-card rounded-2xl shadow-md p-6" data-fixture-id="sf1-wga-rub" data-stage="Semi Final 1" data-team1="Winner Group A" data-team2="Runner-up Group B">
+<div class="text-center mb-6">
+<h4 class="text-xl font-bold text-gray-800 mb-2">Semi Final 1</h4>
+<div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto"></div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="flex flex-col items-center">
+<img alt="Winner Group A" class="h-16 w-16 rounded-full shadow-md mb-2" src="defaultlogo.jpg"/>
+<span class="text-sm font-medium text-gray-600">Winner Group A</span>
+</div>
+<span class="vs-text text-lg">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Runner-up Group B" class="h-16 w-16 rounded-full shadow-md mb-2" src="defaultlogo.jpg"/>
+<span class="text-sm font-medium text-gray-600">Runner-up Group B</span>
+</div>
+</div>
+</div>
+<div class="knockout-card rounded-2xl shadow-md p-6" data-fixture-id="sf2-wgb-rua" data-stage="Semi Final 2" data-team1="Winner Group B" data-team2="Runner-up Group A">
+<div class="text-center mb-6">
+<h4 class="text-xl font-bold text-gray-800 mb-2">Semi Final 2</h4>
+<div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto"></div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="flex flex-col items-center">
+<img alt="Winner Group B" class="h-16 w-16 rounded-full shadow-md mb-2" src="defaultlogo.jpg"/>
+<span class="text-sm font-medium text-gray-600">Winner Group B</span>
+</div>
+<span class="vs-text text-lg">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Runner-up Group A" class="h-16 w-16 rounded-full shadow-md mb-2" src="defaultlogo.jpg"/>
+<span class="text-sm font-medium text-gray-600">Runner-up Group A</span>
+</div>
+</div>
+</div>
+<div class="knockout-card rounded-2xl shadow-md p-6" data-fixture-id="third-lsf1-lsf2" data-stage="Third Place" data-team1="Loser SF1" data-team2="Loser SF2">
+<div class="text-center mb-6">
+<h4 class="text-xl font-bold text-gray-800 mb-2">Third Place</h4>
+<div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent mx-auto"></div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="flex flex-col items-center">
+<img alt="Loser SF1" class="h-16 w-16 rounded-full shadow-md mb-2" src="defaultlogo.jpg"/>
+<span class="text-sm font-medium text-gray-600">Loser SF1</span>
+</div>
+<span class="vs-text text-lg">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Loser SF2" class="h-16 w-16 rounded-full shadow-md mb-2" src="defaultlogo.jpg"/>
+<span class="text-sm font-medium text-gray-600">Loser SF2</span>
+</div>
+</div>
+</div>
+<div class="final-card rounded-2xl shadow-lg p-6" data-fixture-id="final-wsf1-wsf2" data-stage="Final" data-team1="Winner SF1" data-team2="Winner SF2">
+<div class="text-center mb-6">
+<h4 class="text-xl font-bold text-amber-800 mb-2">Championship Final</h4>
+<div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto"></div>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="flex flex-col items-center">
+<img alt="Winner SF1" class="h-18 w-18 rounded-full shadow-lg mb-2 ring-2 ring-amber-300" src="defaultlogo.jpg"/>
+<span class="text-sm font-semibold text-amber-700">Winner SF1</span>
+</div>
+<span class="vs-text text-xl text-amber-600">VS</span>
+<div class="flex flex-col items-center">
+<img alt="Winner SF2" class="h-18 w-18 rounded-full shadow-lg mb-2 ring-2 ring-amber-300" src="defaultlogo.jpg"/>
+<span class="text-sm font-semibold text-amber-700">Winner SF2</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-gray-950 py-8 text-center text-gray-400 mt-12">
+<div class="max-w-4xl mx-auto px-4">
+<p class="text-lg">© 2025 Football Community. All Rights Reserved.</p>
+<p class="text-sm mt-2 opacity-75">Bringing together the best in football competition</p>
+</div>
+</footer>
+<!-- Mobile menu script -->
+<script>
+    const mobileMenuBtn = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener("click", () => {
+        const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+        mobileMenuBtn.setAttribute("aria-expanded", !expanded);
+        mobileMenu.classList.toggle("hidden");
+      });
+      document.addEventListener("click", (e) => {
+        if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+          mobileMenu.classList.add("hidden");
+          mobileMenuBtn.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll('.fixture-card, .group-card, .knockout-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.6s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 50);
+      });
+    });
+  </script>
+<!-- Header + teams -->
+<script type="module">
+    import { injectHeader } from "./tournament_header.js";
+    import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
+    injectHeader("#site-header", { active: "fixtures" });
+    try { const maps = await loadTeams(); hydrateTeamLogos(document, maps); } catch (e) { console.warn("Teams JSON load failed:", e); }
+  </script>
+<!-- Unified Scoreboard click handler (fixtures + knockout) -->
+<script>
+    const SCOREBOARD_PATH = "./scoreboard.html";
+    function getCardToken(card){ return (card?.dataset?.fixtureId || '').trim(); }
+    function buildScoreboardURL({ t1, t2, matchday, stage, fixture }) {
+      const url = new URL(SCOREBOARD_PATH, window.location.href);
+      if (t1) url.searchParams.set("team1", t1.trim());
+      if (t2) url.searchParams.set("team2", t2.trim());
+      if (matchday) url.searchParams.set("matchday", matchday);
+      if (stage) url.searchParams.set("stage", stage);
+      if (fixture) url.searchParams.set("fixture", fixture);
+      url.searchParams.set("auto", "1");
+      return url.toString();
+    }
+    function getFixtureNames(card) {
+      const names = card.querySelectorAll(".team-name");
+      const badgeText = card.querySelector(".matchday-badge")?.textContent || "";
+      const m = badgeText.match(/(\d+)/);
+      return { t1: names[0]?.textContent?.trim() || "", t2: names[1]?.textContent?.trim() || "", matchday: m ? Number(m[1]) : null };
+    }
+    function getKnockoutNames(card) {
+      const t1 = card.dataset.team1 || "";
+      const t2 = card.dataset.team2 || "";
+      const stage = card.dataset.stage || card.querySelector("h4")?.textContent?.trim() || "";
+      return { t1, t2, stage };
+    }
+    document.addEventListener("click", (e) => {
+      const fixture = e.target.closest(".fixture-card.match-card");
+      if (fixture) {
+        const { t1, t2, matchday } = getFixtureNames(fixture);
+        if (!t1 || !t2) return;
+        window.location.href = buildScoreboardURL({ t1, t2, matchday, fixture: getCardToken(fixture) });
+        return;
+      }
+      const ko = e.target.closest(".knockout-card, .final-card");
+      if (ko) {
+        const { t1, t2, stage } = getKnockoutNames(ko);
+        if (!t1 || !t2) return;
+        window.location.href = buildScoreboardURL({ t1, t2, stage, fixture: getCardToken(ko) });
+        return;
+      }
+    });
+  </script>
+<!-- SheetJS (Excel) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Firebase + Page Logic (fixtures hydration + leaderboards + excel) -->
+<script type="module">
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy, doc, getDoc, where, limit } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+      storageBucket: "we-are-eleven.firebasestorage.app",
+      messagingSenderId: "446706356039",
+      appId: "1:446706356039:web:db1bd26c20a2571b824662",
+      measurementId: "G-M3DSVHMNEV"
+    };
+    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    // Utilities
+    const esc = s => String(s ?? "").replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+    const norm = s => (s || "").toString().trim().toLowerCase();
+    const pairKey = (a,b)=>{ const A=norm(a),B=norm(b); return (A<B)?`${A}|||${B}`:`${B}|||${A}`; };
+
+function getCardToken(card){
+  return (card?.dataset?.fixtureId || '').trim();
+}
+async function fetchMatchByToken(token){
+  if(!token) return null;
+  const ds = await getDoc(doc(db, 'matches', token));
+  return ds.exists() ? { id: ds.id, data: ds.data() } : null;
+}
+async function fetchMatchByTokenField(token){
+  try{
+    const qTok = query(collection(db, 'matches'), where('fixtureToken','==', token), limit(1));
+    const snap = await getDocs(qTok);
+    const first = snap.docs[0];
+    return first ? { id: first.id, data: first.data() } : null;
+  }catch(e){ return null; }
+}
+
+
+    // Minute formatter from timestamps
+    function toDate(ts){
+      if(!ts) return null;
+      if(typeof ts === 'number') return new Date(ts);
+      if(typeof ts === 'object' && typeof ts.seconds === 'number') return new Date(ts.seconds*1000);
+      return null;
+    }
+    function minuteStr(goalTime, doc){
+      const t = toDate(goalTime)?.getTime();
+      const ko = toDate(doc?.kickoff)?.getTime();
+      const h2 = toDate(doc?.secondHalfStart)?.getTime();
+      if (t && ko){
+        if (h2 && t >= h2){
+          const mins = 8 + Math.max(0, Math.floor((t - h2) / 60000));
+          return `${mins}’`;
+        }
+        const mins = Math.max(0, Math.floor((t - ko) / 60000));
+        return `${mins}’`;
+      }
+      return toDate(goalTime) ? toDate(goalTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
+    }
+
+    // Status badge calc (prefers explicit status if present, else infer from timestamps)
+    function computeStatus(doc){
+      const s = (doc.status || "").toLowerCase();
+      const ko  = toDate(doc.kickoff);
+      const h1e = toDate(doc.firstHalfEnd);
+      const h2s = toDate(doc.secondHalfStart);
+      const ft  = toDate(doc.fulltime);
+
+      if (s === 'ft' || ft) return { text:'FT', cls:'status-badge status-ft' };
+      if (s === 'ht' || (h1e && !h2s)) return { text:'HT', cls:'status-badge status-ht' };
+      if (s === 'live') return { text:'LIVE', cls:'status-badge status-live' };
+
+      if (ft) return { text:'FT', cls:'status-badge status-ft' };
+      if (h2s && !ft) return { text:'LIVE', cls:'status-badge status-live' };
+      if (h1e && !h2s) return { text:'HT', cls:'status-badge status-ht' };
+      if (ko && !h1e) return { text:'LIVE', cls:'status-badge status-live' };
+
+      return null;
+    }
+
+    // Build latest match index per pair
+    async function buildLatestIndex(){
+      const qMatches = query(collection(db, 'matches'), orderBy('created','desc'));
+      const snap = await getDocs(qMatches);
+      const idx = new Map();
+      snap.forEach(docSnap => {
+        const d = docSnap.data() || {};
+        const t1 = d.teamNames?.team1?.trim() || "";
+        const t2 = d.teamNames?.team2?.trim() || "";
+        if(!t1 || !t2) return;
+        const k = pairKey(t1,t2);
+        if(!idx.has(k)) idx.set(k, { id: docSnap.id, data: d });
+      });
+      return idx;
+    }
+
+    function groupGoals(goals=[], t1Name="", t2Name="", doc){
+      const out = { team1: [], team2: [] };
+      goals.forEach(g => {
+        const side = (g.team === 'team2') ? 'team2' : 'team1';
+        const who = g.scorer || '';
+        const ast = g.assist ? ` (${g.assist})` : '';
+        const m = minuteStr(g.time, doc);
+        const label = [who + ast, m].filter(Boolean).join(' ');
+        if(who) out[side].push(label);
+      });
+      return out;
+    }
+
+    function renderFixtureCard(card, doc){
+      const host = card.querySelector('.fixture-data') || (()=>{ const d=document.createElement('div'); d.className='mt-4 text-center space-y-3 fixture-data'; card.appendChild(d); return d; })();
+      host.innerHTML = '';
+      const t1 = card.querySelectorAll('.team-name')[0]?.textContent?.trim() || '';
+      const t2 = card.querySelectorAll('.team-name')[1]?.textContent?.trim() || '';
+      const s1 = (typeof doc?.scores?.team1 === 'number') ? doc.scores.team1 : null;
+      const s2 = (typeof doc?.scores?.team2 === 'number') ? doc.scores.team2 : null;
+
+      const status = computeStatus(doc);
+      const score = document.createElement('div');
+      score.innerHTML = (s1==null || s2==null)
+        ? `<span class="scoreline-badge">VS</span>${status?` <span class="${status.cls}">${status.text}</span>`:''}`
+        : `<span class="scoreline-badge">${s1} – ${s2}</span>${status?` <span class="${status.cls}">${status.text}</span>`:''}`;
+      host.appendChild(score);
+
+      const gs = groupGoals(Array.isArray(doc?.goals)?doc.goals:[], t1, t2, doc);
+      const rows = document.createElement('div');
+      rows.className = 'fixture-rows';
+      rows.innerHTML = `
+        <div class="team-column"><div class="scorer-list">${gs.team1.length ? gs.team1.map(n=>`<div class='scorer-item'><span class='scorer-bullet'>•</span><span>${esc(n)}</span></div>`).join('') : `<div class='muted'>—</div>`}</div></div>
+        <div class="team-column"><div class="scorer-list">${gs.team2.length ? gs.team2.map(n=>`<div class='scorer-item'><span class='scorer-bullet'>•</span><span>${esc(n)}</span></div>`).join('') : `<div class='muted'>—</div>`}</div></div>
+      `;
+      host.appendChild(rows);
+    }
+
+    async function hydrateFixtures(){
+      const cards = Array.from(document.querySelectorAll('.fixture-card.match-card, .knockout-card, .final-card'));
+      for (const card of cards){
+        const token = getCardToken(card);
+        if (!token) continue; // token required
+        let m = await fetchMatchByToken(token);
+        if (!m) m = await fetchMatchByTokenField(token);
+        if (m) renderFixtureCard(card, m.data);
+      }
+    }
+
+    // Leaderboards
+    const els = {
+      leadersStatus: document.getElementById('leadersStatus'),
+      scorersBody: document.getElementById('scorersBody'),
+      assistsBody: document.getElementById('assistsBody'),
+      dlScorers: document.getElementById('dlScorersCsvBtn'),
+      dlAssists: document.getElementById('dlAssistsCsvBtn'),
+      fetchLeadersBtn: document.getElementById('fetchLeadersBtn'),
+    };
+
+    function mapAdd(map, player, team){ if(!player) return; const k = `${player}|||${team}`; map.set(k,(map.get(k)||0)+1); }
+    function rowsFrom(map){ const arr=[]; map.forEach((c,k)=>{ const [p,t]=k.split('|||'); arr.push({player:p, team:t, count:c}); }); arr.sort((a,b)=> b.count - a.count || a.player.localeCompare(b.player)); return arr; }
+    function renderRows(tbody, rows){ tbody.innerHTML=''; rows.forEach((r,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td class='px-3 py-2 text-slate-500'>${i+1}</td><td class='px-3 py-2'>${esc(r.player)}</td><td class='px-3 py-2'>${esc(r.team)}</td><td class='px-3 py-2 text-right font-semibold'>${r.count}</td>`; tbody.appendChild(tr); }); }
+    function downloadCSV(rows, header){ const lines=[["Player","Team",header].join(',')]; rows.forEach(r=>{ const q=s=>`"${String(s??"").replace(/"/g,'""')}"`; lines.push([q(r.player), q(r.team), r.count].join(',')); }); const blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8'}); const url=URL.createObjectURL(blob); const a=Object.assign(document.createElement('a'),{href:url,download: header==='Goals'? 'top_scorers.csv':'top_assists.csv'}); document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }
+
+    async function loadLeaderboards(){
+      els.leadersStatus.textContent = 'Loading leaderboards…';
+      els.fetchLeadersBtn.disabled = true; els.dlScorers.disabled=true; els.dlAssists.disabled=true;
+      try{
+        const qMatches = query(collection(db,'matches'), orderBy('created','desc'));
+        const snap = await getDocs(qMatches);
+        const scorersMap = new Map();
+        const assistsMap = new Map();
+        snap.forEach(docSnap=>{
+          const d = docSnap.data() || {};
+          const names = d.teamNames || {};
+          const t1 = (names.team1||'').trim();
+          const t2 = (names.team2||'').trim();
+          (Array.isArray(d.goals)?d.goals:[]).forEach(g=>{
+            const side = (g.team==='team2')?'team2':'team1';
+            const team = side==='team2' ? t2 : t1;
+            mapAdd(scorersMap, g.scorer||'', team);
+            mapAdd(assistsMap, g.assist||'', team);
+          });
+        });
+        const scorers = rowsFrom(scorersMap);
+        const assists = rowsFrom(assistsMap);
+        renderRows(els.scorersBody, scorers);
+        renderRows(els.assistsBody, assists);
+        els.dlScorers.disabled = scorers.length===0; els.dlAssists.disabled = assists.length===0;
+        els.dlScorers.onclick = ()=>downloadCSV(scorers,'Goals');
+        els.dlAssists.onclick = ()=>downloadCSV(assists,'Assists');
+        els.leadersStatus.textContent = `Loaded ${snap.size} matches • ${scorers.length} scorers • ${assists.length} assisters.`;
+      } catch(err){
+        console.error(err);
+        els.leadersStatus.textContent = 'Failed to load leaderboards.';
+        alert('Error loading leaderboards. Check console for details.');
+      } finally { els.fetchLeadersBtn.disabled = false; }
+    }
+
+    // Excel export
+    function safeSheetName(str, fallback){ const name=(str||'').replace(/[\\\/?*\[\]:]/g,' ').slice(0,31).trim(); return name || (fallback || 'Sheet'); }
+    function toDateObj(ts){ if(!ts) return null; if(typeof ts==='number') return new Date(ts); if(typeof ts==='object' && typeof ts.seconds==='number') return new Date(ts.seconds*1000); return null; }
+    async function downloadExcel(){
+      const qMatches = query(collection(db, 'matches'), orderBy('created','asc'));
+      const snap = await getDocs(qMatches);
+      const wb = XLSX.utils.book_new();
+      const summary = [["Match ID","Team 1","Team 2","Score","Date"]];
+      snap.forEach(docSnap=>{
+        const d = docSnap.data()||{}; const id=docSnap.id; const t1=d.teamNames?.team1||''; const t2=d.teamNames?.team2||''; const s1=(typeof d.scores?.team1==='number')?d.scores.team1:'-'; const s2=(typeof d.scores?.team2==='number')?d.scores.team2:'-'; const created=toDateObj(d.created); const createdStr = created? created.toLocaleString():''; summary.push([id,t1,t2,`${s1} - ${s2}`, createdStr]);
+      });
+      const wsSummary = XLSX.utils.aoa_to_sheet(summary); XLSX.utils.book_append_sheet(wb, wsSummary, 'All Matches');
+      snap.forEach(docSnap=>{
+        const d=docSnap.data()||{}; const id=docSnap.id; const t1=d.teamNames?.team1||''; const t2=d.teamNames?.team2||''; const s1=(typeof d.scores?.team1==='number')?d.scores.team1:'-'; const s2=(typeof d.scores?.team2==='number')?d.scores.team2:'-';
+        const rows=[["Match ID", id],["Teams", `${t1} vs ${t2}`],["Score", `${s1} - ${s2}`],[""],["Team","Scorer","Assister","Minute/Time"]];
+        (Array.isArray(d.goals)?d.goals:[]).forEach(g=>{
+          const side = (g.team==='team2')?'team2':'team1';
+          const teamName = side==='team2'? t2 : t1;
+          rows.push([teamName, g.scorer||'', g.assist||'', minuteStr(g.time, d)]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(rows); const tabName = safeSheetName(`${t1} vs ${t2}`, id.slice(0,31)); XLSX.utils.book_append_sheet(wb, ws, tabName);
+      });
+      XLSX.writeFile(wb, 'tournament_results.xlsx');
+    }
+
+    // Wire up
+    document.addEventListener('DOMContentLoaded', () => { hydrateFixtures(); loadLeaderboards(); });
+    document.getElementById('fetchLeadersBtn')?.addEventListener('click', loadLeaderboards);
+    document.getElementById('downloadExcelBtn')?.addEventListener('click', downloadExcel);
+  </script>
+</body>
+</html>
