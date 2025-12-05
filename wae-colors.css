@@ -1,0 +1,101 @@
+/* wae-colors.css — exact palette to match uploaded screenshot */
+
+/* Brand colors (pixel-extracted) */
+:root{
+  --wae-nav-bg: #1F2937;       /* header/dark nav (exact from image) */
+  --wae-hero-mid: #898989;     /* hero mid gray (center) */
+  --wae-hero-dark: #3A3A3A;    /* hero darker stop for gradient */
+  --wae-cta-green: #22C55E;    /* Join Us button - exact green */
+  --wae-white: #FFFFFF;        /* card background / text on dark bg */
+  --wae-text-muted: #CBD5E1;   /* muted text */
+  --wae-border: rgba(255,255,255,0.06);
+  --wae-radius: 12px;
+}
+
+/* Page background (default) */
+.wae-bg {
+  background: linear-gradient(180deg, #071026 0%, #071126 100%);
+  color: var(--wae-white);
+  min-height: 100%;
+}
+
+/* Hero (use this on membership page hero area) */
+/* This closely matches the screenshot: smooth gray gradient with darker bottom */
+.wae-hero {
+  background: linear-gradient(180deg, var(--wae-hero-mid) 10%, var(--wae-hero-dark) 90%);
+  color: var(--wae-white);
+  padding: 5rem 1rem;
+  text-align: center;
+}
+
+/* Header / nav */
+.wae-nav {
+  background: var(--wae-nav-bg);
+  color: var(--wae-white);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Card / panel */
+.wae-panel {
+  background: var(--wae-white);
+  color: #0b1220;
+  border-radius: var(--wae-radius);
+  padding: 1.25rem;
+  border: 1px solid var(--wae-border);
+  box-shadow: 0 8px 20px rgba(2,6,23,0.15);
+}
+
+/* Inputs (on dark backgrounds) */
+.wae-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--wae-white);
+  font-size: 1rem;
+}
+.wae-input::placeholder { color: rgba(255,255,255,0.45); }
+
+/* Primary CTA (Join Us) */
+.wae-btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: .75rem 1rem;
+  border-radius: 9999px;
+  font-weight:700;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+  border: none;
+}
+.wae-btn-primary {
+  background: linear-gradient(180deg, var(--wae-cta-green), #1fa34f);
+  color: #0b1220;
+  box-shadow: 0 10px 24px rgba(34,197,94,0.12);
+}
+.wae-btn-primary:hover { transform: translateY(-2px); }
+
+/* Secondary CTA / pill */
+.wae-pill {
+  background: rgba(255,255,255,0.06);
+  color: var(--wae-white);
+  padding: .5rem .9rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.035);
+}
+
+/* Links / muted text */
+.wae-link { color: var(--wae-cta-green); font-weight:600; text-decoration:none; }
+.wae-muted { color: var(--wae-text-muted); }
+
+/* Utility */
+.center { display:flex; align-items:center; justify-content:center; }
+.max-w-md { max-width: 720px; margin-left:auto; margin-right:auto; }
+
+/* Responsive tweaks */
+@media (max-width:640px){
+  .wae-hero { padding: 3.5rem 1rem; }
+  .wae-panel { padding: 1rem; }
+}
