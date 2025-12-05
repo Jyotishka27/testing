@@ -160,8 +160,8 @@
   </footer>
 
   <script type="module">
-    import { injectHeader } from "./header.js";
-    import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
+    import { injectHeader } from "./scripts/header.js";
+    import { loadTeams, hydrateTeamLogos } from "./scripts/teams-util.js";
     injectHeader("#site-header", { active: "home" });
     try {
       const maps = await loadTeams();
