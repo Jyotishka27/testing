@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photos & Videos - We Are Eleven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); color: #1e293b; }
+    .section-header { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
+    .section-header::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #64748b, transparent); animation: shimmer 3s infinite; }
+    @keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+    .photo-card, .video-card { border-radius: 1rem; border: 1px solid #e5e7eb; overflow: hidden; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+    .photo-img { display: block; width: 100%; height: 220px; object-fit: cover; transition: transform .35s ease; }
+    .photo-card:hover .photo-img { transform: scale(1.03); }
+    .photo-meta, .video-card .p-4 { padding: .85rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+    .video-thumb { aspect-ratio: 16 / 9; width: 100%; }
+    .chip { font-size: .72rem; padding: .2rem .55rem; border-radius: 9999px; border: 1px solid #cbd5e1; background:#f8fafc; white-space: nowrap; }
+    .lightbox-open { overflow: hidden; }
+  </style>
+
+    <style data-gallery-enhanced>
+      .gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+      @media(min-width:640px){.gallery-grid{grid-template-columns:repeat(3,1fr)}}
+      @media(min-width:1024px){.gallery-grid{grid-template-columns:repeat(4,1fr)}}
+      .gallery-item{position:relative;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;background:#fff}
+      .gallery-item::after{content:"";display:block;padding-bottom:100%}
+      .gallery-item > *{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+      .gallery-item:focus-within{outline:2px solid #111827;outline-offset:2px}
+    </style>
+    
+</head>
+<body class="flex flex-col min-h-screen">
+  <div id="site-header"></div>
+
+  <main class="flex-grow max-w-7xl mx-auto p-6 space-y-10">
+    <section class="section-header rounded-2xl shadow-lg p-8">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div>
+          <h1 class="text-4xl font-extrabold text-gray-900">Media Gallery</h1>
+          <p class="mt-2 text-gray-600">Browse photos and videos from groups, knockouts, and behind-the-scenes. Click any photo to view full-screen.</p>
+        </div>
+      </div>
+      <div class="mt-6 flex flex-wrap items-center gap-2">
+        <button class="filter-btn chip" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-btn chip" data-filter="group-a">Group A</button>
+        <button class="filter-btn chip" data-filter="group-b">Group B</button>
+        <button class="filter-btn chip" data-filter="semis">Semi-finals</button>
+        <button class="filter-btn chip" data-filter="third">Third Place</button>
+        <button class="filter-btn chip" data-filter="runner">Runners-Up</button>
+        <button class="filter-btn chip" data-filter="final">Final</button>
+        <button class="filter-btn chip" data-filter="bts">Behind the Scenes</button>
+      </div>
+    </section>
+
+    <!-- Photos Section -->
+    <section class="section-header rounded-2xl shadow-lg p-6">
+      <h2 class="text-xl font-bold mb-4">Photos</h2>
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="gallery">
+        <figure class="photo-card" data-category="group-a" data-title="Messiah FC Squad">
+          <img class="photo-img" src="Messiah FC Team.jpg" alt="Messiah FC Squad" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Group A · Messiah FC Squad</span>
+            <span class="chip">Group A</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="group-a" data-title="White Panthers Squad">
+          <img class="photo-img" src="White Panthers Team.jpg" alt="White Panthers Squad" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Group A · White Panthers Squad</span>
+            <span class="chip">Group A</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="group-a" data-title="Thunderbolt Squad">
+          <img class="photo-img" src="Thunderbolt Team.jpg" alt="Thunderbolt Squad" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Group A · Thunderbolt Squad</span>
+            <span class="chip">Group A</span>
+          </figcaption>
+        </figure>        
+
+        <figure class="photo-card" data-category="group-b" data-title="Amigos FC Squad">
+          <img class="photo-img" src="Amingos FC Team.jpg" alt="Amigos FC Squad" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Amigos FC Squad</span>
+            <span class="chip">Group B</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="group-b" data-title="Strawhat Pirates Squad">
+          <img class="photo-img" src="Strawhat Pirates Team.jpg" alt="Strawhat Pirates Squad" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Strawhat Pirates Squad</span>
+            <span class="chip">Group B</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="group-b" data-title="Red Bulls Eleven Squad">
+          <img class="photo-img" src="Red Bulls Eleven Team.jpg" alt="Red Bulls Eleven Squad" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Red Bulls Eleven Squad</span>
+            <span class="chip">Group B</span>
+          </figcaption>
+        </figure>        
+        
+        <figure class="photo-card" data-category="semis" data-title="Semi-final action">
+          <img class="photo-img" src="photos/semis-1.jpg" alt="Semi-final action" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Semi-final · Tackle</span>
+            <span class="chip">Semi-finals</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="final" data-title="champions_cup_lift">
+          <img class="photo-img" src="champions_cup_lift.jpg" alt="champions_cup_lift" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Champions Lift</span>
+            <span class="chip">Final</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="runner" data-title="runners_up_cup">
+          <img class="photo-img" src="runners_up_cup.jpg" alt="runners_up_cup" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Runners Up Lift</span>
+            <span class="chip">Runners Up</span>
+          </figcaption>
+        </figure>        
+
+        <figure class="photo-card" data-category="third" data-title="Third place match">
+          <img class="photo-img" src="photos/third-1.jpg" alt="Third place match" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Third Place · Duel</span>
+            <span class="chip">Third Place</span>
+          </figcaption>
+        </figure>
+
+        <figure class="photo-card" data-category="bts" data-title="Behind the scenes">
+          <img class="photo-img" src="photos/bts-1.jpg" alt="Behind the scenes" loading="lazy"/>
+          <figcaption class="photo-meta">
+            <span class="text-sm font-medium truncate">Team Talk</span>
+            <span class="chip">BTS</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="section-header rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-bold mb-4">Tournament Videos</h2>
+      <div id="videoGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <article class="video-card" data-category="group-b">
+          <div class="video-thumb" data-yturl="https://youtu.be/JrzIIz7uas4" data-title="Independence Cup 2025 | Group B | Match 3 | Amigo FC 🆚 Strawhat Pirates"></div>
+          <div class="p-4 flex items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold truncate">Independence Cup 2025 | Group B | Match 3 | Amigo FC 🆚 Strawhat Pirates</h3>
+            <span class="chip">Group B</span>
+          </div>
+        </article>
+
+        <article class="video-card" data-category="group-a">
+          <div class="video-thumb" data-yturl="https://youtu.be/-uOE6Pf3Yr4" data-title="Independence Cup 2025 | Group A | Match 3 | White Panthers 🆚 Thunderbolt"></div>
+          <div class="p-4 flex items-center justify-between gap-2">
+            <h3 class="text-sm font-semibold truncate">Independence Cup 2025 | Group A | Match 3 | White Panthers 🆚 Thunderbolt</h3>
+            <span class="chip">Group A</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-gray-950 py-8 text-center text-gray-400 mt-12">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="text-lg">© 2025 Football Community. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { injectHeader } from "./tournament_header.js";
+    injectHeader("#site-header", { active: "tournament_photos" });
+  </script>
+
+  <script>
+    const filterBtns = Array.from(document.querySelectorAll('.filter-btn'));
+    const photoGrid = document.getElementById('gallery');
+    const videoGrid = document.getElementById('videoGrid');
+    const photoCards = Array.from(photoGrid.querySelectorAll('.photo-card'));
+    const videoCards = Array.from(videoGrid.querySelectorAll('.video-card'));
+    const filterables = [...photoCards, ...videoCards];
+
+    function applyFilter(cat) {
+      filterables.forEach(el => {
+        const show = cat === 'all' || el.dataset.category === cat;
+        el.classList.toggle('hidden', !show);
+      });
+    }
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
+        btn.setAttribute('aria-pressed', 'true');
+        applyFilter(btn.dataset.filter);
+      });
+    });
+
+    function extractYouTubeId(url) {
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+        if (u.hostname.includes('youtube.com')) {
+          if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2];
+          return u.searchParams.get('v');
+        }
+      } catch {}
+      return url;
+    }
+
+    function hydrateLiteYouTube() {
+      const nodes = document.querySelectorAll('.video-thumb[data-yturl], .video-thumb[data-ytid]');
+      nodes.forEach((wrap) => {
+        let id = wrap.getAttribute('data-ytid');
+        if (!id) {
+          const url = wrap.getAttribute('data-yturl');
+          id = extractYouTubeId(url);
+        }
+        const title = wrap.getAttribute('data-title') || 'Video';
+        wrap.innerHTML = `
+          <button class="relative w-full h-full" data-play="${id}" aria-label="Play: ${title}">
+            <img loading="lazy" class="w-full h-full object-cover" src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="${title}">
+            <span class="absolute inset-0 grid place-items-center">
+              <svg width="84" height="84" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="42" cy="42" r="42" fill="rgba(0,0,0,0.5)"/>
+                <polygon points="34,26 62,42 34,58" fill="white"/>
+              </svg>
+            </span>
+          </button>`;
+        wrap.querySelector('button').addEventListener('click', () => {
+          const src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+          wrap.innerHTML = `<iframe class="w-full h-full" src="${src}" title="${title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+        });
+      });
+    }
+    hydrateLiteYouTube();
+  </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Team List - We Are Eleven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: white;
+      color: #1E293B;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    	.nav-link {
+  	  color: #4b5563; /* Tailwind gray-700 */
+  	  font-weight: 500; /* font-medium */
+  	  text-decoration: none;
+  	  transition: color 0.2s ease;
+  	}
+  
+  	.nav-link:hover {
+  	  color: #374151; /* Tailwind gray-800 */
+  	}
+  
+  	.nav-link.active {
+  	  color: #dc2626; /* Tailwind red-600 */
+  	}
+    /* ✅ Tabs */
+    .tabs { display: flex; gap: 0.5rem; overflow-x: auto; white-space: nowrap; margin-bottom: 1.25rem; }
+    .tab-button {
+      padding: 0.5rem 1.25rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      color: #334155;
+      background-color: transparent;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.17s ease;
+      font-size: 0.97rem;
+      flex-shrink: 0;
+    }
+    .tab-button.active {
+      background-color: #E2E8F0;
+      color: #1E293B;
+      border-color: #64748B;
+      box-shadow: 0 3px 10px rgba(34, 44, 56, 0.07);
+    }
+    .tab-button:hover:not(.active) {
+      background-color: #F1F5F9;
+      color: #1E293B;
+    }
+    /* ✅ Table */
+    table { width: 100%; font-size: 1rem; }
+    thead th {
+      background-color: #F9FAFB;
+      font-weight: 700;
+      color: #334155;
+      padding: 0.7rem 1rem;
+      text-align: left;
+    }
+    tbody tr { transition: background-color 0.18s; }
+    tbody tr:hover { background-color: #F1F5F9; }
+    tbody td { padding: 0.85rem 1rem; font-weight: 500; }
+  </style>
+</head>
+<body class="text-black">
+
+  <!-- ✅ Header -->
+  <div id="site-header"></div>
+
+  <!-- ✅ Hero Section -->
+  <section class="relative py-12 flex flex-col items-center justify-center text-center px-4 bg-gray-50">
+    <h2 class="text-3xl md:text-4xl font-bold text-black">
+      Independence Cup 2025 - Team List
+    </h2>
+  </section>
+
+  <!-- ✅ Team List Section -->
+  <main class="max-w-4xl mx-auto mt-6 px-4">
+    <section class="bg-white rounded-2xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Teams</h2>
+      <div id="tabs" class="tabs" role="tablist" aria-label="Teams"></div>
+      <div id="teamContent" tabindex="0" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- ✅ Footer -->
+  <footer class="bg-gray-950 py-6 text-center text-gray-400 mt-12">
+    <p>© 2025 Football Community. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+  // Teams and players 
+    
+    const TEAMS = [ { name: 'Thunderbolt', image: 'Thunderbolt.jpg' }, 
+    { name: 'Red Bulls Eleven', image: 'Red Bulls Eleven.jpg' }, 
+    { name: 'Messiah FC', image: 'Messiah FC.jpg' }, 
+    { name: 'White Panthers', image: 'White Panthers.jpg' }, 
+    { name: 'Strawhat Pirates', image: 'Strawhat Pirates.jpg' }, 
+    { name: 'Amigos FC', image: 'Amigos FC.jpg' }, 
+    ]; 
+    
+    const SALES = [ 
+      { teamIndex: 0, playerName: 'Ayon Roy', position: 'Defence', captain: true }, 
+      { teamIndex: 0, playerName: 'Arnab Talukdar', position: 'Goalkeeper' }, 
+      { teamIndex: 0, playerName: 'Sourav Acharya', position: 'Striker' }, 
+      { teamIndex: 0, playerName: 'Proloy Malik', position: 'Defence' }, { teamIndex: 0, playerName: 'Siddhant Ameria', position: 'Midfield' }, { teamIndex: 0, playerName: 'Kingshuk Banerjee', position: 'Midfield' }, { teamIndex: 0, playerName: 'Aritra Adhikari', position: 'Striker' }, { teamIndex: 1, playerName: 'Subhojit Dutta', position: 'Midfield', captain: true }, { teamIndex: 1, playerName: 'Soumadeep Dutta', position: 'Goalkeeper' }, { teamIndex: 1, playerName: 'Jeffin Mathew', position: 'Midfield' }, { teamIndex: 1, playerName: 'Yash Agarwal', position: 'Defence' }, { teamIndex: 1, playerName: 'Shivaditya Gunin', position: 'Striker' }, { teamIndex: 1, playerName: 'Arghadeep Das', position: 'Defence' }, { teamIndex: 1, playerName: 'Akash Mukherjee', position: 'Midfield' }, { teamIndex: 1, playerName: 'Sourav Das', position: 'Midfield' }, { teamIndex: 2, playerName: 'Ritam Chowdhury', position: 'Midfield', captain: true }, { teamIndex: 2, playerName: 'Dhruv', position: 'Goalkeeper' }, { teamIndex: 2, playerName: 'Risove Show', position: 'Midfield' }, { teamIndex: 2, playerName: 'Biswajit Karmakar', position: 'Midfield' }, { teamIndex: 2, playerName: 'Satyaki Sarkar', position: 'Defence' }, { teamIndex: 2, playerName: 'Ayan Das', position: 'Defence' }, { teamIndex: 2, playerName: 'Dipanjan Mazumder', position: 'Defence' }, { teamIndex: 3, playerName: 'Shubhanjan Basu', position: 'Midfield', captain: true }, { teamIndex: 3, playerName: 'Rupayan Chakraborty', position: 'Goalkeeper' }, { teamIndex: 3, playerName: 'Soumik Mukherjee', position: 'Defence' }, { teamIndex: 3, playerName: 'Shardendu Lahiri', position: 'Midfield' }, { teamIndex: 3, playerName: 'Subhayan Banerjee', position: 'Defence' }, { teamIndex: 3, playerName: 'Pulak Dowari', position: 'Defence' }, { teamIndex: 3, playerName: 'Sagnik Chakraborty', position: 'Midfield' }, { teamIndex: 4, playerName: 'Srinjoy Kundu', position: 'Midfield', captain: true }, { teamIndex: 4, playerName: 'Arko Dutta', position: 'Goalkeeper' }, { teamIndex: 4, playerName: 'Suvam Chakraborty', position: 'Defence' }, { teamIndex: 4, playerName: 'Dibwayan Trivedi', position: 'Defence' }, { teamIndex: 4, playerName: 'Supratim Sengupta', position: 'Striker' }, { teamIndex: 4, playerName: 'Aman Pandey', position: 'Defence' }, { teamIndex: 4, playerName: 'Ankit Aich', position: 'Defence' }, { teamIndex: 5, playerName: 'Subhamoy Das', position: 'Midfield', captain: true }, { teamIndex: 5, playerName: 'Aditya Chakraborty', position: 'Goalkeeper' }, { teamIndex: 5, playerName: 'Vasu Gupta', position: 'Striker' }, { teamIndex: 5, playerName: 'Krishnendu Mondal', position: 'Midfield' }, { teamIndex: 5, playerName: 'Sanchay Bose', position: 'Defence' }, { teamIndex: 5, playerName: 'Rahul Sarkar', position: 'Defence' }, { teamIndex: 5, playerName: 'Kaustav Guha Mazumdar', position: 'Striker' } ];
+
+    const positionIcons = { Striker: '⚽', Defence: '🛡', Goalkeeper: '🧤', Midfield: '🎯' };
+
+    const tabsContainer = document.getElementById("tabs");
+    const teamContent = document.getElementById("teamContent");
+    let activeTeamIndex = 0;
+
+    function renderTabs() {
+      tabsContainer.innerHTML = "";
+      TEAMS.forEach((team, index) => {
+        const btn = document.createElement("button");
+        btn.innerHTML = `<img src="${team.image}" alt="${team.name} Logo" class="h-6 w-6 rounded-full object-cover mr-2" /> ${team.name}`;
+        btn.className = "tab-button flex items-center";
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          activeTeamIndex = index;
+          renderTeamTable();
+        });
+        tabsContainer.appendChild(btn);
+        if (index === 0) btn.classList.add("active");
+      });
+      renderTeamTable();
+    }
+
+    function renderTeamTable() {
+      const team = TEAMS[activeTeamIndex];
+      const players = SALES.filter(p => p.teamIndex === activeTeamIndex);
+      teamContent.innerHTML = `
+        <div class="flex items-center gap-3 mb-4">
+          <img src="${team.image}" alt="${team.name} Logo" class="h-10 w-10 rounded-full object-cover" />
+          <h3 class="text-lg font-bold">${team.name}</h3>
+        </div>
+        <table class="w-full border border-gray-200 rounded-lg overflow-hidden">
+          <thead>
+            <tr>
+              <th class="px-4 py-2 text-left">Player</th>
+              <th class="px-4 py-2 text-left">Position</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${players.map(p => `
+              <tr class="border-t">
+                <td class="px-4 py-2 flex items-center gap-2">
+                  <span>${positionIcons[p.position] || ''}</span>
+                  ${p.playerName}
+                  ${p.captain ? '<span class="ml-2 text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">C</span>' : ''}
+                </td>
+                <td class="px-4 py-2">${p.position}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+    renderTabs();
+  </script>
+<script type="module">
+    import { injectHeader } from "./tournament_header.js";
+    import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
+    // Header
+    injectHeader("#site-header", { active: "teams" });
+    // Team/logo hydration (keeps names/logos consistent from data/teams.json)
+    try {
+      const maps = await loadTeams();
+      hydrateTeamLogos(document, maps);
+    } catch (e) {
+      console.warn("Teams JSON load failed:", e);
+    }
+  </script>
+</body>
+</html>
