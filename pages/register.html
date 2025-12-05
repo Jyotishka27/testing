@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register — We Are Eleven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="wae-colors.css">
+</head>
+<body class="wae-bg">
+  <!-- Header -->
+  <div id="site-header" class="wae-nav"></div>
+
+  <main class="max-w-md mx-auto py-12 px-6">
+    <div class="wae-panel rounded-xl">
+      <h1 id="title" class="text-2xl font-bold mb-2">Join We Are Eleven</h1>
+      <p id="subtitle" class="wae-muted mb-4">Create your account and join the community.</p>
+
+      <!-- Plan Summary -->
+      <div id="planCard" class="wae-panel mb-4">
+        <h3 id="planTitle" class="text-lg font-semibold"></h3>
+        <p id="planPrice" class="font-bold my-1"></p>
+        <p id="planGames" class="wae-muted mb-2"></p>
+        <ul id="planBenefits" class="text-sm wae-muted mb-2"></ul>
+        <p id="planNote" class="text-sm wae-muted"></p>
+      </div>
+
+      <!-- Registration Form -->
+      <form id="registerForm" class="space-y-4" autocomplete="on">
+        <input id="name" type="text" placeholder="Full name" class="wae-input" required />
+        <input id="email" type="email" placeholder="Email" class="wae-input" required />
+        <input id="password" type="password" placeholder="Password (min 6 chars)" class="wae-input" required />
+
+        <!-- Agreement checkbox for paid plans -->
+        <div id="paidAgreement" class="hidden text-sm wae-muted">
+          <label class="flex items-start gap-2">
+            <input id="agree" type="checkbox" />
+            <div>
+              I agree to pay for the selected plan and understand my registration will be pending until payment verification.
+            </div>
+          </label>
+        </div>
+
+        <button id="submitBtn" type="submit" class="wae-btn wae-btn-primary w-full">Create account</button>
+      </form>
+
+      <p id="authMessage" class="text-center text-sm mt-4"></p>
+    </div>
+  </main>
+
+  <footer class="py-8 text-center wae-muted">© 2025 We Are Eleven</footer>
+
+  <script type="module">
+    import { injectHeader } from "./header.js";
+    injectHeader("#site-header", { active: "" });
+
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Firebase config - keep as in your project
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // STATIC plans (as requested)
+    const PLANS = {
+      bronze: {
+        code: "bronze",
+        title: "Bronze (Free Play)",
+        price: 0,
+        games: 0,
+        can_vote: false,
+        benefits: ["Community access", "Voting not allowed"]
+      },
+      silver: {
+        code: "silver",
+        title: "Silver",
+        price: 1125,
+        games: 4,
+        can_vote: true,
+        benefits: ["Can vote in polls", "Silver badge"]
+      },
+      gold: {
+        code: "gold",
+        title: "Gold",
+        price: 3375,
+        games: 12,
+        can_vote: true,
+        benefits: ["Can vote in polls", "Priority perks", "Gold badge"]
+      },
+      platinum: {
+        code: "platinum",
+        title: "Platinum",
+        price: 13500,
+        games: 48,
+        can_vote: true,
+        benefits: ["Can vote in polls", "VIP perks", "Platinum badge"]
+      }
+    };
+
+    // Read selected plan from query string
+    const params = new URLSearchParams(window.location.search);
+    const planCode = (params.get('plan') || 'bronze').toLowerCase();
+    const plan = PLANS[planCode] || PLANS['bronze'];
+
+    // UI refs
+    const planTitle = document.getElementById('planTitle');
+    const planPrice = document.getElementById('planPrice');
+    const planGames = document.getElementById('planGames');
+    const planBenefits = document.getElementById('planBenefits');
+    const planNote = document.getElementById('planNote');
+    const paidAgreement = document.getElementById('paidAgreement');
+    const registerForm = document.getElementById('registerForm');
+    const authMessage = document.getElementById('authMessage');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Populate UI
+    planTitle.textContent = plan.title;
+    planPrice.textContent = plan.price === 0 ? "₹0" : `₹${plan.price}`;
+    planGames.textContent = `Includes ${plan.games} games`;
+    planBenefits.innerHTML = plan.benefits.map(b => `<li>• ${b}</li>`).join('');
+    planNote.textContent = plan.price === 0 ? "Free membership — voting is not allowed for Bronze." : "Paid membership — you'll need to complete payment after registration. Admin will verify and activate your membership.";
+
+    if (plan.price > 0) {
+      paidAgreement.classList.remove('hidden');
+    } else {
+      paidAgreement.classList.add('hidden');
+    }
+
+    // Helper to set auth message
+    function setMessage(text, kind = 'info') {
+      authMessage.textContent = text;
+      authMessage.className = 'text-center text-sm mt-4';
+      if (kind === 'error') authMessage.classList.add('wae-error');
+      if (kind === 'success') authMessage.classList.add('wae-success');
+      if (kind === 'info') authMessage.classList.add('wae-muted');
+    }
+
+    // Registration handler
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      setMessage('', 'info');
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = 0.85;
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const agree = document.getElementById('agree')?.checked || false;
+
+      if (!name || !email || !password) {
+        setMessage('❌ Please complete all fields.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = 1;
+        return;
+      }
+
+      if (plan.price > 0 && !agree) {
+        setMessage('❌ Please agree to the payment terms to continue.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = 1;
+        return;
+      }
+
+      try {
+        // Create Auth user
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: name });
+
+        const uid = userCredential.user.uid;
+
+        // Determine membership status and fields
+        let membership_status = plan.price === 0 ? 'active' : 'pending_payment';
+        // We set games_remaining only for free plan. For paid plans, admin verification/payment will assign games.
+        let games_remaining = plan.price === 0 ? plan.games : 0;
+        let can_vote = plan.price === 0 ? plan.can_vote : false;
+
+        // Create user doc in Firestore
+        const userDocRef = doc(db, 'users', uid);
+        await setDoc(userDocRef, {
+          displayName: name,
+          email,
+          membership: plan.code,
+          membership_status,
+          games_remaining,
+          can_vote,
+          payment_request_id: null,
+          created_at: serverTimestamp()
+        });
+
+        // If paid plan, create a payment_request doc for admin verification (manual flow)
+        let paymentRequestId = null;
+        if (plan.price > 0) {
+          const prRef = doc(collection(db, 'payment_requests')); // auto-id
+          const referenceCode = `WE11-${plan.code.toUpperCase()}-${Date.now().toString().slice(-6)}`; // short ref
+          await setDoc(prRef, {
+            user_uid: uid,
+            plan_code: plan.code,
+            amount: plan.price,
+            currency: "INR",
+            reference_code: referenceCode,
+            status: 'created',
+            created_at: serverTimestamp()
+          });
+          paymentRequestId = prRef.id;
+          // update user doc with payment_request_id
+          await setDoc(userDocRef, { payment_request_id: paymentRequestId }, { merge: true });
+        }
+
+        setMessage('✅ Registration successful. Redirecting...', 'success');
+
+        // Redirect to profile (or a pending page). Small delay for UX.
+        setTimeout(() => {
+          window.location.href = 'profile.html';
+        }, 900);
+
+      } catch (err) {
+        console.error('Registration error', err);
+        setMessage('❌ ' + (err.message || 'Registration failed'), 'error');
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = 1;
+      }
+    });
+  </script>
+</body>
+</html>

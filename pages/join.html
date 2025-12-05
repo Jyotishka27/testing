@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Memberships — We Are Eleven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="wae-colors.css">
+</head>
+<body class="wae-bg">
+
+  <!-- Header -->
+  <div id="site-header" class="wae-nav"></div>
+
+  <!-- Hero -->
+  <section class="wae-hero">
+    <h1 class="text-4xl font-bold mb-4">Choose Your Membership</h1>
+    <p class="wae-muted max-w-xl mx-auto">
+      Free Play is for community access only. To play matches and vote, choose Silver, Gold, or Platinum — each includes bundled games.
+    </p>
+  </section>
+
+  <!-- Membership Cards -->
+  <main class="max-w-5xl mx-auto py-12 px-6">
+    <div id="plans" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-8 text-center wae-muted">
+    <p>© 2025 We Are Eleven. All Rights Reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { injectHeader } from "./header.js";
+    injectHeader("#site-header", { active: "Memberships" });
+
+    // Static membership plans
+    const PLANS = {
+      bronze: {
+        code: "bronze",
+        title: "Bronze (Free Play)",
+        price: 0,
+        games: 0,
+        can_vote: false,
+        benefits: ["Community access", "Voting not allowed"]
+      },
+      silver: {
+        code: "silver",
+        title: "Silver",
+        price: 1125,
+        games: 4,
+        can_vote: true,
+        benefits: ["Can vote in polls", "Silver badge"]
+      },
+      gold: {
+        code: "gold",
+        title: "Gold",
+        price: 3375,
+        games: 12,
+        can_vote: true,
+        benefits: ["Can vote in polls", "Priority perks", "Gold badge"]
+      },
+      platinum: {
+        code: "platinum",
+        title: "Platinum",
+        price: 13500,
+        games: 48,
+        can_vote: true,
+        benefits: ["Can vote in polls", "VIP perks", "Platinum badge"]
+      }
+    };
+
+    const plansContainer = document.getElementById("plans");
+
+    function renderPlans(plans){
+      plansContainer.innerHTML = Object.values(plans).map(plan => `
+        <div class="wae-panel flex flex-col justify-between">
+          <div>
+            <h3 class="text-xl font-semibold mb-2">${plan.title}</h3>
+            <p class="font-bold mb-2">₹${plan.price}</p>
+            <p class="wae-muted mb-4">Includes ${plan.games} games</p>
+            <ul class="text-sm wae-muted space-y-1 mb-6">
+              ${plan.benefits.map(b => `<li>• ${b}</li>`).join("")}
+            </ul>
+          </div>
+          <a href="register.html?plan=${plan.code}" class="wae-btn wae-btn-primary w-full text-center">
+            ${plan.price === 0 ? "Join Free" : "Join " + plan.title}
+          </a>
+        </div>
+      `).join("");
+    }
+
+    renderPlans(PLANS);
+  </script>
+</body>
+</html>

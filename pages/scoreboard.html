@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Tournament Scoreboard - We Are Eleven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body { background: #0b1220; }
+    .glass { backdrop-filter: blur(8px); background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06)); }
+    .badge { display:inline-flex; align-items:center; gap:.35rem; font-weight:600; font-size:.75rem; padding:.25rem .6rem; border-radius:9999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100">
+  <header class="max-w-6xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">⚽ Live Tournament Scoreboard</h1>
+      <div class="text-xs md:text-sm opacity-75">Realtime via Firebase</div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 pb-24">
+    <!-- Card: Match controls -->
+    <section class="glass rounded-2xl shadow-xl border border-white/10 p-4 md:p-6">
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col md:flex-row gap-3 md:items-center">
+          <div class="flex-1">
+            <label for="matchSelect" class="block text-sm font-semibold mb-1">Current match</label>
+            <select id="matchSelect" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"></select>
+          </div>
+          <div class="flex gap-2">
+            <button id="newMatchBtn" class="rounded-xl px-4 py-2 bg-indigo-500 hover:bg-indigo-400 font-semibold">New Match</button>
+            <button id="deleteMatchBtn" class="rounded-xl px-4 py-2 bg-rose-600 hover:bg-rose-500 font-semibold">Delete</button>
+          </div>
+        </div>
+
+        <!-- meta badges -->
+        <div id="metaBadges" class="flex flex-wrap items-center gap-2 text-xs"></div>
+
+        <!-- Timer controls -->
+        <div class="flex flex-wrap items-center gap-2 mt-1">
+          <button id="kickOffBtn" class="rounded-xl px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 font-semibold text-sm">Kick Off</button>
+          <button id="endFirstHalfBtn" class="rounded-xl px-3 py-1.5 bg-amber-500/90 hover:bg-amber-400 font-semibold text-sm">End 1st Half</button>
+          <button id="startSecondHalfBtn" class="rounded-xl px-3 py-1.5 bg-indigo-500 hover:bg-indigo-400 font-semibold text-sm">Start 2nd Half</button>
+          <button id="endMatchBtn" class="rounded-xl px-3 py-1.5 bg-rose-600 hover:bg-rose-500 font-semibold text-sm">End Match</button>
+
+          <!-- Live clock -->
+          <span id="liveClock" class="badge ml-auto">
+            <span class="opacity-70">Clock</span>
+            <strong id="clockText">—</strong>
+            <span id="statusPill" class="rounded-full px-2 py-0.5 text-xs border border-white/10"></span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card: Teams + Score -->
+    <section class="grid md:grid-cols-3 gap-6 mt-6">
+      <!-- Team A -->
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <div class="text-center">
+          <label class="text-xs uppercase tracking-wide opacity-70">Team A</label>
+          <input id="team1Input" class="mt-1 w-full text-center text-xl md:text-2xl font-bold bg-transparent border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Team A" />
+        </div>
+        <div class="mt-5 flex items-center justify-center gap-3">
+          <button data-team="team1" data-delta="-1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">−</button>
+          <div class="text-5xl font-black tabular-nums" id="team1Score">0</div>
+          <button data-team="team1" data-delta="1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">＋</button>
+        </div>
+      </div>
+
+      <!-- Center -->
+      <div class="glass rounded-2xl p-5 border border-white/10 flex flex-col items-center justify-center text-center">
+        <div class="text-4xl font-black">VS</div>
+        <div class="mt-2 text-xs opacity-70">Match clock (optional)</div>
+        <div class="mt-2">
+          <button id="resetBtn" class="rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">Reset Scores</button>
+        </div>
+      </div>
+
+      <!-- Team B -->
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <div class="text-center">
+          <label class="text-xs uppercase tracking-wide opacity-70">Team B</label>
+          <input id="team2Input" class="mt-1 w-full text-center text-xl md:text-2xl font-bold bg-transparent border border-white/10 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Team B" />
+        </div>
+        <div class="mt-5 flex items-center justify-center gap-3">
+          <button data-team="team2" data-delta="-1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">−</button>
+          <div class="text-5xl font-black tabular-nums" id="team2Score">0</div>
+          <button data-team="team2" data-delta="1" class="score-btn rounded-xl px-4 py-2 bg-slate-800 hover:bg-slate-700">＋</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add goal -->
+    <section class="glass rounded-2xl p-5 border border-white/10 mt-6">
+      <h2 class="text-lg font-semibold">Add a Goal</h2>
+      <form id="goalForm" class="grid md:grid-cols-4 gap-3 mt-3">
+        <select id="teamSelect" required class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2">
+          <option value="">Select Team</option>
+          <option value="team1">Team A</option>
+          <option value="team2">Team B</option>
+        </select>
+        <input id="scorerInput" required placeholder="Scorer" class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2" />
+        <input id="assistInput" placeholder="Assist (optional)" class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2" />
+        <button class="rounded-xl px-4 py-2 bg-emerald-600 hover:bg-emerald-500 font-semibold">Add Goal</button>
+      </form>
+    </section>
+
+    <!-- Goal lists -->
+    <section class="grid md:grid-cols-2 gap-6 mt-6">
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <h3 id="teamAStatsTitle" class="font-semibold text-indigo-300">Team A Goals</h3>
+        <ul id="teamAStats" class="divide-y divide-white/10 mt-3"></ul>
+      </div>
+      <div class="glass rounded-2xl p-5 border border-white/10">
+        <h3 id="teamBStatsTitle" class="font-semibold text-indigo-300">Team B Goals</h3>
+        <ul id="teamBStats" class="divide-y divide-white/10 mt-3"></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase + App -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, doc, setDoc, updateDoc, getDoc, addDoc, deleteDoc,
+      onSnapshot, query, orderBy, serverTimestamp, increment, deleteField
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0DaaYB1hZLY8h23QOpT7Ok4sX5ACkHTM",
+      authDomain: "we-are-eleven.firebaseapp.com",
+      projectId: "we-are-eleven",
+      storageBucket: "we-are-eleven.firebasestorage.app",
+      messagingSenderId: "446706356039",
+      appId: "1:446706356039:web:db1bd26c20a2571b824662",
+      measurementId: "G-M3DSVHMNEV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentMatchId = null;
+    let unsubMatch = null;
+    let unsubList = null;
+    let lastMatchData = null;
+
+    // Prefill from URL (also used when creating a match)
+    let prefillMatchday = null;  // number or string
+    let prefillStage = null;     // string
+    let prefillFixture = null;   // token (doc id) if provided
+
+    const els = {
+      matchSelect: document.getElementById('matchSelect'),
+      newMatchBtn: document.getElementById('newMatchBtn'),
+      deleteMatchBtn: document.getElementById('deleteMatchBtn'),
+      team1Input: document.getElementById('team1Input'),
+      team2Input: document.getElementById('team2Input'),
+      team1Score: document.getElementById('team1Score'),
+      team2Score: document.getElementById('team2Score'),
+      resetBtn: document.getElementById('resetBtn'),
+      goalForm: document.getElementById('goalForm'),
+      teamSelect: document.getElementById('teamSelect'),
+      scorerInput: document.getElementById('scorerInput'),
+      assistInput: document.getElementById('assistInput'),
+      teamAStats: document.getElementById('teamAStats'),
+      teamBStats: document.getElementById('teamBStats'),
+      teamAStatsTitle: document.getElementById('teamAStatsTitle'),
+      teamBStatsTitle: document.getElementById('teamBStatsTitle'),
+      metaBadges: document.getElementById('metaBadges'),
+    };
+
+    // Timer constants & helpers
+    const HALF_LEN_MS = 8 * 60 * 1000; // 8 minutes
+    const elsTimer = {
+      kick: document.getElementById('kickOffBtn'),
+      endH1: document.getElementById('endFirstHalfBtn'),
+      startH2: document.getElementById('startSecondHalfBtn'),
+      endFT: document.getElementById('endMatchBtn'),
+      clockText: document.getElementById('clockText'),
+      statusPill: document.getElementById('statusPill'),
+    };
+    let clockInterval = null;
+
+    function escapeHtml(str = '') {
+      return String(str).replace(/[&<>"]+/g, s => ({'&': '&amp;','<': '&lt;','>': '&gt;','"': '&quot;'}[s]));
+    }
+
+    function setMetaBadges(data) {
+      const md = data?.matchday ?? prefillMatchday ?? null;
+      const st = data?.stage ?? prefillStage ?? null;
+      const bits = [];
+      if (md !== null && md !== undefined && md !== "") {
+        bits.push(`<span class="badge">📅 Matchday <span class="opacity-80">${escapeHtml(md)}</span></span>`);
+      }
+      if (st) {
+        bits.push(`<span class="badge">🏷️ Stage <span class="opacity-80">${escapeHtml(st)}</span></span>`);
+      }
+      els.metaBadges.innerHTML = bits.join(" ");
+    }
+
+    function tsToMs(ts) {
+      if (!ts) return null;
+      if (typeof ts === 'number') return ts;
+      if (ts.seconds) return ts.seconds * 1000;
+      return null;
+    }
+
+    // Determine phase from document fields
+    // returns one of: 'PRE', 'H1', 'HT', 'H2', 'FT'
+    function phaseFromDoc(d) {
+      const ko = tsToMs(d?.kickoff);
+      const h1End = tsToMs(d?.firstHalfEnd);
+      const h2Start = tsToMs(d?.secondHalfStart);
+      const ft = tsToMs(d?.fulltime);
+      const s = (d?.status || '').toLowerCase();
+
+      if (s === 'ft' || ft) return 'FT';
+      if (s === 'ht' || (h1End && !h2Start)) return 'HT';
+      if (s === 'live') {
+        if (h2Start && !ft) return 'H2';
+        if (ko && !h1End) return 'H1';
+      }
+
+      if (ft) return 'FT';
+      if (h2Start) return 'H2';
+      if (h1End) return 'HT';
+      if (ko) return 'H1';
+      return 'PRE';
+    }
+
+    function mmss(ms) {
+      const t = Math.max(0, Math.floor(ms / 1000));
+      const m = Math.floor(t / 60);
+      const s = t % 60;
+      return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    function renderClock(d) {
+      if (!d) return;
+      const now = Date.now();
+      const ko = tsToMs(d?.kickoff);
+      const h1End = tsToMs(d?.firstHalfEnd);
+      const h2Start = tsToMs(d?.secondHalfStart);
+      const ft = tsToMs(d?.fulltime);
+      const ph = phaseFromDoc(d);
+
+      let text = '—';
+      let pill = '';
+
+      if (ph === 'PRE') { text = '00:00'; pill = 'PRE'; }
+      else if (ph === 'H1') {
+        const elapsed = now - (ko || now);
+        if (elapsed <= HALF_LEN_MS) text = `1H ${mmss(elapsed)}`;
+        else text = `1H 08:00 +${Math.floor((elapsed - HALF_LEN_MS) / 1000)}s`;
+        pill = 'LIVE';
+      }
+      else if (ph === 'HT') { text = '—'; pill = 'HT'; }
+      else if (ph === 'H2') {
+        const baseline = HALF_LEN_MS;
+        const liveStart = h2Start || now;
+        const elapsed = baseline + (now - liveStart);
+        if (elapsed <= 2 * HALF_LEN_MS) text = `2H ${mmss(elapsed - baseline)}`;
+        else text = `2H 08:00 +${Math.floor((elapsed - 2 * HALF_LEN_MS) / 1000)}s`;
+        pill = 'LIVE';
+      }
+      else if (ph === 'FT') {
+        let total = 2 * HALF_LEN_MS;
+        if (ko && h1End) total += Math.max(0, h1End - ko - HALF_LEN_MS);
+        if (h2Start && ft) total += Math.max(0, ft - h2Start - HALF_LEN_MS);
+        text = `FT ${mmss(total)}`;
+        pill = 'FT';
+      }
+
+      elsTimer.clockText.textContent = text;
+      elsTimer.statusPill.textContent = pill;
+    }
+
+    function startClockLoop() {
+      stopClockLoop();
+      clockInterval = setInterval(() => {
+        if (lastMatchData) renderClock(lastMatchData);
+      }, 1000);
+    }
+    function stopClockLoop() { if (clockInterval) { clearInterval(clockInterval); clockInterval = null; } }
+
+    function renderMatchData(data) {
+      lastMatchData = data; // keep fresh for clock loop
+
+      const scores = data?.scores || { team1: 0, team2: 0 };
+      const teamNames = data?.teamNames || { team1: 'Team A', team2: 'Team B' };
+      const goals = data?.goals || [];
+
+      els.team1Input.value = teamNames.team1;
+      els.team2Input.value = teamNames.team2;
+      els.team1Score.textContent = scores.team1;
+      els.team2Score.textContent = scores.team2;
+      els.teamAStatsTitle.textContent = `${teamNames.team1} Goals`;
+      els.teamBStatsTitle.textContent = `${teamNames.team2} Goals`;
+
+      // Update select option label
+      [...els.matchSelect.options].forEach(opt => {
+        if (opt.value === currentMatchId) {
+          const tag = data?.stage ? ` • ${data.stage}` : (data?.matchday ? ` • MD ${data.matchday}` : "");
+          opt.textContent = `${teamNames.team1} vs ${teamNames.team2}${tag}`;
+        }
+      });
+
+      // Goals list (show 8+8 minute format)
+      els.teamAStats.innerHTML = '';
+      els.teamBStats.innerHTML = '';
+      goals.forEach((g, i) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between py-2';
+        const t = minuteStr(g.time, data);
+        li.innerHTML = `
+          <div>
+            <div class="font-semibold">${escapeHtml(g.scorer)}</div>
+            <div class="text-xs opacity-70">${g.assist ? `Assist: ${escapeHtml(g.assist)} · ` : ''}${t}</div>
+          </div>
+          <button class="rounded-lg px-2.5 py-1.5 bg-rose-600/90 hover:bg-rose-500 text-sm" data-del-index="${i}">Delete</button>
+        `;
+        (g.team === 'team1' ? els.teamAStats : els.teamBStats).appendChild(li);
+      });
+
+      els.teamAStats.querySelectorAll('button[data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
+      els.teamBStats.querySelectorAll('button[data-del-index]').forEach(btn => btn.addEventListener('click', onDeleteGoal));
+
+      // Badges
+      setMetaBadges(data);
+    }
+
+    function listenToMatchList() {
+      if (unsubList) unsubList();
+      const qy = query(collection(db, 'matches'), orderBy('created', 'desc'));
+      unsubList = onSnapshot(qy, snap => {
+        const currentVal = els.matchSelect.value;
+        els.matchSelect.innerHTML = '';
+        snap.forEach(d => {
+          const data = d.data();
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          const t1 = data?.teamNames?.team1 || 'Team A';
+          const t2 = data?.teamNames?.team2 || 'Team B';
+          const tag = data?.stage ? ` • ${data.stage}` : (data?.matchday ? ` • MD ${data.matchday}` : "");
+          opt.textContent = `${t1} vs ${t2}${tag}`;
+          els.matchSelect.appendChild(opt);
+        });
+        const found = [...els.matchSelect.options].some(o => o.value === currentVal);
+        if (found) els.matchSelect.value = currentVal;
+        if (!els.matchSelect.value && els.matchSelect.options.length) {
+          els.matchSelect.selectedIndex = 0;
+          selectMatch(els.matchSelect.value);
+        }
+      });
+    }
+
+    function listenToMatchDoc(matchId) {
+      if (unsubMatch) unsubMatch();
+      if (!matchId) return;
+      const ref = doc(db, 'matches', matchId);
+      unsubMatch = onSnapshot(ref, snap => {
+        if (snap.exists()) {
+          const data = snap.data();
+          renderMatchData(data);
+          renderClock(data);           // update clock immediately
+        }
+      });
+      startClockLoop();                // tick every second using lastMatchData
+    }
+
+    async function selectMatch(matchId) {
+      currentMatchId = matchId;
+      listenToMatchDoc(matchId);
+      // Set badges early using prefill if needed
+      const ref = doc(db, 'matches', matchId);
+      const s = await getDoc(ref);
+      if (s.exists()) {
+        const data = s.data();
+        setMetaBadges(data);
+
+        // Backfill missing meta if URL provided them
+        const update = {};
+        let needsUpdate = false;
+        if ((data.matchday === undefined || data.matchday === null || data.matchday === "") && (prefillMatchday !== null && prefillMatchday !== undefined && prefillMatchday !== "")) {
+          update.matchday = prefillMatchday;
+          needsUpdate = true;
+        }
+        if ((!data.stage || data.stage === "") && (prefillStage && prefillStage !== "")) {
+          update.stage = prefillStage;
+          needsUpdate = true;
+        }
+        if (needsUpdate) {
+          await updateDoc(ref, { ...update, updated: serverTimestamp() });
+        }
+      }
+    }
+
+    // Create a match from the current inputs (including prefilled matchday/stage).
+    async function createMatch({ silent = false } = {}) {
+      const nameA = (els.team1Input.value || '').trim();
+      const nameB = (els.team2Input.value || '').trim();
+      if (!nameA || !nameB) {
+        alert('Please enter both team names first.');
+        return;
+      }
+      if (!silent) {
+        const ok = confirm(`Create new match with:\n${nameA} vs ${nameB}${prefillStage ? `\nStage: ${prefillStage}` : ''}${prefillMatchday !== null && prefillMatchday !== undefined ? `\nMatchday: ${prefillMatchday}` : ''}?`);
+        if (!ok) return;
+      }
+      const col = collection(db, 'matches');
+      const payload = {
+        teamNames: { team1: nameA, team2: nameB },
+        scores: { team1: 0, team2: 0 },
+        goals: [],
+        created: serverTimestamp(),
+        updated: serverTimestamp()
+      };
+      if (prefillStage) payload.stage = prefillStage;
+      if (prefillMatchday !== null && prefillMatchday !== undefined && prefillMatchday !== "") {
+        payload.matchday = prefillMatchday;
+      }
+      if (prefillFixture) {
+        payload.fixtureToken = prefillFixture;
+        const dref = doc(db, 'matches', prefillFixture);
+        await setDoc(dref, payload, { merge: true });
+        els.matchSelect.value = prefillFixture;
+        await selectMatch(prefillFixture);
+      } else {
+        const docRef = await addDoc(col, payload);
+        els.matchSelect.value = docRef.id;
+        await selectMatch(docRef.id);
+      }
+    }
+
+    async function deleteMatch() {
+      if (!currentMatchId) return;
+      if (!confirm('Delete this match? This cannot be undone.')) return;
+      await deleteDoc(doc(db, 'matches', currentMatchId));
+      currentMatchId = null;
+      if (unsubMatch) unsubMatch();
+      stopClockLoop();
+      els.metaBadges.innerHTML = "";
+      lastMatchData = null;
+      renderClock(null);
+    }
+
+    async function saveNamesDebounced() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, {
+        teamNames: {
+          team1: els.team1Input.value.trim() || 'Team A',
+          team2: els.team2Input.value.trim() || 'Team B'
+        },
+        updated: serverTimestamp()
+      });
+    }
+
+    async function adjustScore(team, delta) {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const scores = data.scores || { team1: 0, team2: 0 };
+      scores[team] = Math.max(0, (scores[team] || 0) + delta);
+      await updateDoc(ref, { scores, updated: serverTimestamp() });
+    }
+
+    async function resetScores() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, { scores: { team1: 0, team2: 0 }, goals: [], updated: serverTimestamp() });
+    }
+
+    function minuteStr(goalTime, doc) {
+      const t = tsToMs(goalTime);
+      const ko = tsToMs(doc?.kickoff);
+      const h2 = tsToMs(doc?.secondHalfStart);
+      if (t && ko) {
+        if (h2 && t >= h2) {
+          const mins = 8 + Math.max(0, Math.floor((t - h2) / 60000));
+          return `${mins}’`;
+        }
+        const mins = Math.max(0, Math.floor((t - ko) / 60000));
+        return `${mins}’`;
+      }
+      return t ? new Date(t).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : "";
+    }
+
+    async function addGoal(e) {
+      e.preventDefault();
+      if (!currentMatchId) return alert('Create or select a match first.');
+      const team = els.teamSelect.value;
+      const scorer = els.scorerInput.value.trim();
+      const assist = els.assistInput.value.trim();
+      if (!team || !scorer) return;
+
+      const ref = doc(db, 'matches', currentMatchId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+      const goals = Array.isArray(data.goals) ? [...data.goals] : [];
+      const goal = { team, scorer, ...(assist ? { assist } : {}), time: Date.now() };
+      goals.push(goal);
+
+      await updateDoc(ref, {
+        [`scores.${team}`]: increment(1),
+        goals,
+        updated: serverTimestamp()
+      });
+
+      els.goalForm.reset();
+    }
+
+    async function onDeleteGoal(ev) {
+      const idx = Number(ev.currentTarget.getAttribute('data-del-index'));
+      if (!Number.isFinite(idx) || !currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const goals = data.goals || [];
+      const g = goals[idx];
+      if (!g) return;
+
+      const currentTeamScore = (data.scores?.[g.team] ?? 0);
+      const newTeamScore = Math.max(0, currentTeamScore - 1);
+      const newScores = { ...(data.scores || { team1:0, team2:0 }), [g.team]: newTeamScore };
+
+      goals.splice(idx, 1);
+      await updateDoc(ref, { scores: newScores, goals, updated: serverTimestamp() });
+    }
+
+    // Timer actions -> Firestore timestamps
+    async function setKickOff() {
+      if (!currentMatchId) return alert('Select or create a match first.');
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, {
+        kickoff: serverTimestamp(),
+        firstHalfEnd: deleteField(),
+        secondHalfStart: deleteField(),
+        fulltime: deleteField(),
+        status: 'live',
+        updated: serverTimestamp()
+      });
+    }
+    async function endFirstHalf() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, { firstHalfEnd: serverTimestamp(), status: 'ht', updated: serverTimestamp() });
+    }
+    async function startSecondHalf() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, { secondHalfStart: serverTimestamp(), status: 'live', updated: serverTimestamp() });
+    }
+    async function endMatch() {
+      if (!currentMatchId) return;
+      const ref = doc(db, 'matches', currentMatchId);
+      await updateDoc(ref, { fulltime: serverTimestamp(), status: 'ft', updated: serverTimestamp() });
+    }
+
+    // ---- Prefill from URL & auto-create / deep-link support ----
+    async function readPrefillFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      const t1 = params.get('team1');
+      const t2 = params.get('team2');
+      const auto = params.get('auto');        // "1" => auto-create
+      const mid = params.get('matchId');      // optional deep link
+      const md = params.get('matchday');      // may be number or string
+      const st = params.get('stage');         // string, e.g., "Semi Final 1"
+      const fx = params.get('fixture');     // fixture token (doc id)
+
+      // stash meta
+      if (md !== null) {
+        const asNum = Number(md);
+        prefillMatchday = Number.isFinite(asNum) ? asNum : md; // keep as string if not numeric
+      }
+      if (st) prefillStage = st;
+
+      if (fx) prefillFixture = fx;
+
+      if (t1) els.team1Input.value = t1;
+      if (t2) els.team2Input.value = t2;
+
+      if (t1) els.teamAStatsTitle.textContent = `${t1} Goals`;
+      if (t2) els.teamBStatsTitle.textContent = `${t2} Goals`;
+
+      // Show badges immediately (before doc exists)
+      setMetaBadges({ matchday: prefillMatchday, stage: prefillStage });
+
+      if (prefillFixture) {
+        const asRef = doc(db, 'matches', prefillFixture);
+        const s = await getDoc(asRef);
+        if (s.exists()) {
+          els.matchSelect.value = prefillFixture;
+          await selectMatch(prefillFixture);
+          return;
+        }
+      }
+
+      if (mid) {
+        await selectMatch(mid);
+        return;
+      }
+
+      if (t1 && t2 && auto === '1') {
+        await createMatch({ silent: true });
+      }
+    }
+
+    // ===================== Event listeners =====================
+    els.newMatchBtn.addEventListener('click', () => createMatch({ silent: false }));
+    els.deleteMatchBtn.addEventListener('click', deleteMatch);
+    els.matchSelect.addEventListener('change', (e) => selectMatch(e.target.value));
+
+    let nameTimer = null;
+    function queueNameSave() {
+      clearTimeout(nameTimer);
+      nameTimer = setTimeout(saveNamesDebounced, 400);
+    }
+    els.team1Input.addEventListener('input', queueNameSave);
+    els.team2Input.addEventListener('input', queueNameSave);
+
+    document.querySelectorAll('.score-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const team = btn.getAttribute('data-team');
+        const delta = Number(btn.getAttribute('data-delta')) || 0;
+        adjustScore(team, delta);
+      });
+    });
+
+    els.resetBtn.addEventListener('click', resetScores);
+    els.goalForm.addEventListener('submit', addGoal);
+
+    // Timer controls
+    elsTimer.kick?.addEventListener('click', setKickOff);
+    elsTimer.endH1?.addEventListener('click', endFirstHalf);
+    elsTimer.startH2?.addEventListener('click', startSecondHalf);
+    elsTimer.endFT?.addEventListener('click', endMatch);
+
+    // bootstrap
+    await readPrefillFromURL();
+    listenToMatchList();
+  </script>
+</body>
+</html>

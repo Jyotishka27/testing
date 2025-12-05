@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Us - We Are Eleven</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: white;
+      color: #1e293b;
+    }
+
+  	.nav-link {
+  	  color: #4b5563; /* Tailwind gray-700 */
+  	  font-weight: 500; /* font-medium */
+  	  text-decoration: none;
+  	  transition: color 0.2s ease;
+  	}
+  
+  	.nav-link:hover {
+  	  color: #374151; /* Tailwind gray-800 */
+  	}
+  
+  	.nav-link.active {
+  	  color: #dc2626; /* Tailwind red-600 */
+  	}
+    
+    /* Floating animation for buttons (if needed elsewhere) */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .mobile-link.active {
+      color: #dc2626; /* Tailwind red-600 or similar */
+      font-weight: 600;
+    }
+    
+    /* Watermark style */
+    .watermark img {
+      opacity: 0.06;
+      width: 500px;
+      max-width: 90%;
+    }
+
+    /* Card hover */
+    .card:hover, .winner-card:hover {
+      transform: translateY(-4px);
+      transition: transform 0.2s ease;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      object-fit: cover;
+      border: 4px solid #e2e8f0;
+    }
+
+    .winner-photo {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 0.04);
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="text-black flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <div id="site-header"></div>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-6xl mx-auto p-4">
+
+    <!-- Organizers -->
+    <h1 class="text-3xl font-bold mb-10 text-center">Meet The Organizers</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="card bg-white rounded-2xl shadow-lg p-6 text-center">
+        <img src="Debayan.jpg" alt="Debayan" class="avatar" />
+        <h2 class="text-xl font-semibold mb-1">Debayan</h2>
+        <p class="text-gray-700 text-sm">Co-Organizer</p>
+      </div>
+      <div class="card bg-white rounded-2xl shadow-lg p-6 text-center">
+        <img src="Gourav.jpg" alt="Gourav" class="avatar" />
+        <h2 class="text-xl font-semibold mb-1">Gourav</h2>
+        <p class="text-gray-700 text-sm">Co-Organizer</p>
+      </div>
+      <div class="card bg-white rounded-2xl shadow-lg p-6 text-center">
+        <img src="Jyotishka.jpg" alt="Jyotishka" class="avatar" />
+        <h2 class="text-xl font-semibold mb-1">Jyotishka</h2>
+        <p class="text-gray-700 text-sm">Co-Organizer</p>
+      </div>
+    </div>
+
+    <!-- About Us Text -->
+    <section class="bg-white rounded-2xl shadow-lg p-6 mt-12 text-gray-700 leading-relaxed text-justify">
+      <p class="mt-4">Founded on the belief that football is more than just a game, our community brings together a diverse team of players, organizers, and supporters who share one mission: to celebrate the beautiful game through competitive spirit, camaraderie, and unwavering dedication.</p>
+      <p class="mt-4">We are more than just eleven players; we are a family united by our love for football, striving to uplift and inspire each other with every kick. Whether it's intense tournaments, friendly matches, or community events, We Are Eleven stands as a symbol of passion, resilience, and sportsmanship.</p>
+      <p class="mt-4">Join us on this incredible journey towards greatness, as we continue to build a legacy of teamwork, respect, and unforgettable moments on the field. Together, we play, we conquer, we are eleven.</p>
+    </section>
+
+    <!-- Champions Gallery -->
+    <section class="bg-white rounded-2xl shadow-lg p-6 mt-12">
+      <h2 class="text-2xl font-bold mb-8 text-center">Champions Gallery</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="winner-card bg-white rounded-2xl shadow-lg p-4 text-center">
+          <img src="Winner2024.jpg" alt="2024 Winners" class="winner-photo mx-auto" />
+          <h3 class="text-lg font-semibold mt-4">2024 Champions</h3>
+        </div>
+        <div class="winner-card bg-white rounded-2xl shadow-lg p-4 text-center">
+          <img src="Winner2023.jpg" alt="2023 Winners" class="winner-photo mx-auto" />
+          <h3 class="text-lg font-semibold mt-4">2023 Champions</h3>
+        </div>
+        <div class="winner-card bg-white rounded-2xl shadow-lg p-4 text-center">
+          <img src="Winner2022.jpg" alt="2022 Winners" class="winner-photo mx-auto" />
+          <h3 class="text-lg font-semibold mt-4">2022 Champions</h3>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-950 py-6 text-center text-gray-400 mt-12">
+    <p>© 2025 Football Community. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Mobile menu script -->
+  <script>
+    const mobileMenuBtn = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    mobileMenuBtn.addEventListener("click", () => {
+      const expanded = mobileMenuBtn.getAttribute("aria-expanded") === "true";
+      mobileMenuBtn.setAttribute("aria-expanded", !expanded);
+      mobileMenu.classList.toggle("hidden");
+    });
+  </script>
+<script type="module">
+    import { injectHeader } from "./header.js";
+    import { loadTeams, hydrateTeamLogos } from "./teams-util.js";
+    // Header
+    injectHeader("#site-header", { active: "about" });
+    // Team/logo hydration (keeps names/logos consistent from data/teams.json)
+    try {
+      const maps = await loadTeams();
+      hydrateTeamLogos(document, maps);
+    } catch (e) {
+      console.warn("Teams JSON load failed:", e);
+    }
+  </script>
+</body>
+</html>
